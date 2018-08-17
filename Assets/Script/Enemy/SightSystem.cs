@@ -5,5 +5,10 @@ using UnityEngine;
 public class SightSystem : MonoBehaviour {
     private bool[] EnemySightFlag;
 
+    public void DectectPlayer()
+    {
+
+    }
+
 
 }

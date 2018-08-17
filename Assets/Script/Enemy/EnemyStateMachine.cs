@@ -38,6 +38,7 @@ abstract public class EnemyStateMachine : MonoBehaviour {
 
         AttachedEnemy.Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, true);
         Vector3 TargetPosition = AttachedEnemy.FindMovePosition();
+
         Vector3 MovePointPerSecond = (TargetPosition - transform.position) / 15;
 
         while (transform.position != TargetPosition)

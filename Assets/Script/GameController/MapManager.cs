@@ -102,7 +102,7 @@ public class MapManager : MonoBehaviour {
             }
         }
 
-        castShadow(PlayerManager.Instance.transform.position, 8);
+        castShadow(PlayerManager.Instance.transform.position, 12);
     }
 
     private void GetIndexsFromPosition(Vector2 Position, out int RowIndex, out int ColumnIndex)

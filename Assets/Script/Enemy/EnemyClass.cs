@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class EnemyClass : MonoBehaviour {
+
     private int hp;
     private int attackPoint;
     private float attackRange;
-    private FindShortestMovePosition PathFinder;
 
     public Animator Anim;
 
@@ -42,47 +42,41 @@ public abstract class EnemyClass : MonoBehaviour {
     {
         Vector2 EnemyToPlayer = PlayerManager.Instance.transform.position - transform.position;
 
-        if (EnemyToPlayer.x == 0)
+        if ((int)Mathf.Round(EnemyToPlayer.x * 100) == 0)
         {
             if (EnemyToPlayer.y > 0)
             {
-                return new Vector2(0.0f, 0.16f);
+                return transform.position + new Vector3(0.0f, 0.16f, 0.0f);
             }
             else
             {
-                return new Vector2(0.0f, -0.16f);
+                return transform.position + new Vector3(0.0f, -0.16f, 0.0f);
             }
         }
-
-        else if (EnemyToPlayer.y == 0)
+        else if ((int)Mathf.Round(EnemyToPlayer.y * 100) == 0)
         {
             if (EnemyToPlayer.x > 0)
             {
-                return new Vector2(0.16f, 0.0f);
+                return transform.position + new Vector3(0.16f,0.0f, 0.0f);
             }
             else
             {
-                return new Vector2(-0.16f, 0.0f);
+                return transform.position + new Vector3(-0.16f, 0.0f, 0.0f);
             }
         }
-
-        else if (EnemyToPlayer.x > 0 && EnemyToPlayer.y > 0)
-        {
-            return new Vector2(0.16f, 0.16f);
-        }
-
         else if (EnemyToPlayer.x > 0 && EnemyToPlayer.y < 0)
         {
-            return new Vector2(0.16f, -0.16f);
+            return transform.position + new Vector3(0.16f, -0.16f,0.0f);
         }
         else if (EnemyToPlayer.x < 0 && EnemyToPlayer.y > 0) 
         {
-            return new Vector2(-0.16f, 0.16f);
+            return transform.position + new Vector3(-0.16f, 0.16f, 0.0f);
         }
         else if(EnemyToPlayer.x < 0 && EnemyToPlayer.y < 0)
         {
-            return new Vector2(-0.16f, -0.16f);
+            return transform.position + new Vector3(-0.16f, -0.16f, 0.0f);
         }
+
         return transform.position;
     }
 
