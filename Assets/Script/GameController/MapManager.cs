@@ -2,28 +2,32 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum TileState
+{
+    Shadow,
+    BasicTile,
+    Wall,
+    Player,
+    Enemy
+}
 
-public class MapManager : MonoBehaviour {
+
+public class MapManager{
     public static MapManager Instance;
-    [SerializeField]
-    private TextAsset MapDataText;
-    private int[,] mapData;
 
-    private int WIDTH;
-    private int HEIGH;
-    private int distance;
-    private int[] limits;
-    private bool[] fieldOfView;
+    private static TextAsset MapDataText;
+    private static TileState[,] mapData;
 
-    private int[][] rounding;
+    private static int WIDTH;
+    private static int HEIGH;
+    private static int distance;
+    private static int[] limits;
+    private static bool[] fieldOfView;
 
-    public int[,] MapData
-    {
-        get
-        {
-            return mapData;
-        }
-    }    
+    private static int[][] rounding;
+
+    public static TileState[,] MapData;
+    
     // MapData[x,y] = 0 -> Wall
     //              = 1 -> Tile
     //              = 2 -> Player
@@ -68,21 +72,6 @@ public class MapManager : MonoBehaviour {
             }
         }
 
-        //for(int i = 0; i < mapData.GetLength(0); i++)
-        //{
-        //    string TargetString = string.Empty;
-        //    for(int j = 0; j < mapData.GetLength(1); j++)
-        //    {
-        //        if(mapData[i,j] == 1)
-        //        {
-        //            TargetString += "0";
-        //        }
-        //        else
-        //        {
-        //            TargetString += "X";
-        //        }
-        //    }
-        //}
         HEIGH = mapData.GetLength(0);
         WIDTH = mapData.GetLength(1);
 
@@ -102,7 +91,16 @@ public class MapManager : MonoBehaviour {
             }
         }
 
-        castShadow(PlayerManager.Instance.transform.position, 12);
+        rounding = new int[20][];
+        for (int i = 1; i <= 20; i++)
+        {
+            rounding[i] = new int[i + 1];
+            for (int j = 1; j <= i; j++)
+            {
+                rounding[i][j] = (int)Mathf.Min(j, Mathf.Round(i * Mathf.Cos(Mathf.Asin(j / (i + 0.5f)))));
+            }
+        }
+        ShadowCast(PlayerManager.Instance.transform.position ,12);
     }
 
     private void GetIndexsFromPosition(Vector2 Position, out int RowIndex, out int ColumnIndex)
@@ -117,20 +115,11 @@ public class MapManager : MonoBehaviour {
         return new Vector2(-1.52f + Row * 0.16f, 1.20f - Column * 0.16f);
     }
 
-    public void castShadow(Vector2 PlayerPosition, int Distance)
+    public bool[] PutShadowFlag(Vector2 PlayerPosition ,int Distance)
     {
         int x, y;
         GetIndexsFromPosition(PlayerPosition, out x, out y);
 
-        rounding = new int[Distance + 1][];
-        for (int i = 1; i <= Distance; i++)
-        {
-            rounding[i] = new int[i + 1];
-            for (int j = 1; j <= i; j++)
-            {
-                rounding[i][j] = (int)Mathf.Min(j, Mathf.Round(i * Mathf.Cos(Mathf.Asin(j / (i + 0.5f)))));
-            }
-        }
         distance = Distance;
 
         limits = rounding[distance];
@@ -150,11 +139,18 @@ public class MapManager : MonoBehaviour {
         scanSector(x, y, 0, 0, +1, -1);
         scanSector(x, y, 0, 0, -1, -1);
 
-        for(int i = 0; i < mapData.GetLength(0); i++)
+        return fieldOfView;
+    }
+
+    public void ShadowCast(Vector3 PlayerPosition,int Sight)
+    {
+        bool[] FlagShadow = PutShadowFlag(PlayerPosition, Sight);
+
+        for (int i = 0; i < mapData.GetLength(0); i++)
         {
-            for(int j =0; j< mapData.GetLength(1); j++)
+            for (int j = 0; j < mapData.GetLength(1); j++)
             {
-                if(fieldOfView[i * WIDTH + j])
+                if (FlagShadow[i * WIDTH + j])
                 {
                     Shadows[i, j].SetActive(false);
                 }
@@ -164,7 +160,6 @@ public class MapManager : MonoBehaviour {
                 }
             }
         }
-       
     }
 
     private void scanSector(int cx, int cy, int m1, int m2, int m3, int m4)
@@ -201,7 +196,6 @@ public class MapManager : MonoBehaviour {
                     {
                         obs.add(a1, a2);
                     }
-
                 }
             }
             obs.nextRow();
@@ -230,19 +224,14 @@ public class Obstacles
 
         if (length > limit && o1 <= a2[length - 1])
         {
-
             // Merging several blocking cells
             a2[length - 1] = o2;
-
         }
         else
         {
-
             a1[length] = o1;
             a2[length++] = o2;
-
         }
-
     }
 
     public bool isBlocked(float a)

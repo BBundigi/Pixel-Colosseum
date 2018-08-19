@@ -8,6 +8,8 @@ public abstract class EnemyClass : MonoBehaviour {
     private int attackPoint;
     private float attackRange;
 
+    private bool isPlayerDeteched;
+
     public Animator Anim;
 
     public int Hp
@@ -97,5 +99,18 @@ public abstract class EnemyClass : MonoBehaviour {
     {
         Destroy(gameObject);
         TurnManager.Instance.EnemyTurnEnd();
+    }
+
+    public void FindPlayer()
+    {
+        bool[] EnemySightFlag = MapManager.Instance.PutShadowFlag(transform.position, 12);
+
+        for(int i =0; i < EnemySightFlag.Length; i++)
+        {
+            if(EnemySightFlag[i])
+            {
+                 
+            }
+        }
     }
 }

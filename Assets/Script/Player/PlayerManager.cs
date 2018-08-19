@@ -83,7 +83,7 @@ public IEnumerator MovePosition(Vector3 TargetPosition)
         }
         transform.position = TargetPosition;
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, false);
-        MapManager.Instance.castShadow(transform.position, 12);
+        MapManager.Instance.ShadowCast(transform.position, 12);
         TurnManager.Instance.PlayerTurnEnd();
     }
 
