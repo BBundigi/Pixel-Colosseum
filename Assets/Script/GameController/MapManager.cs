@@ -12,10 +12,17 @@ public enum TileState
 }
 
 
-public class MapManager{
-    public static MapManager Instance;
+public class MapManager {
 
-    private static TextAsset MapDataText;
+    public static TileState[,] MapData
+    {
+        get
+        {
+            return mapData;
+        }
+    }
+
+    private static TextAsset MapDataText = Resources.Load<TextAsset>("MapDataText/MapDataText_Cave");
     private static TileState[,] mapData;
 
     private static int WIDTH;
@@ -25,8 +32,6 @@ public class MapManager{
     private static bool[] fieldOfView;
 
     private static int[][] rounding;
-
-    public static TileState[,] MapData;
     
     // MapData[x,y] = 0 -> Wall
     //              = 1 -> Tile
@@ -37,38 +42,36 @@ public class MapManager{
 
     private int SightDistance;
 
-    [SerializeField]
-    private GameObject Shadow;
+    private static GameObject Shadow = Resources.Load<GameObject>("Prefab/shadow");
 
-    private GameObject[,] Shadows;
-    private Transform ShadowParent;
+    
+    private static GameObject[,] Shadows;
+    private static Transform ShadowParent;
 
 
-    private  Obstacles obs = new Obstacles();
-    void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(this);
-        }
-    }
-    void Start() { 
+    private static Obstacles Obs = new Obstacles();
+
+     static MapManager() { 
 
         string StringMapData = MapDataText.ToString();
 
         string[] EachString = StringMapData.Split('\n');
 
-        mapData = new int[EachString.Length, EachString[0].Length - 1];
+        mapData = new TileState[EachString.Length, EachString[0].Length - 1];
 
         for (int i = 0; i < mapData.GetLength(0); i++)
         {
             for (int j = 0; j < mapData.GetLength(1); j++)
             {
-                mapData[i, j] = (int)char.GetNumericValue(EachString[i][j]);
+                if (EachString[i][j] == '1')
+                {
+                    mapData[i,j] = TileState.BasicTile;
+                }
+                else
+
+                {
+                    mapData[i,j] = TileState.Wall;
+                }
             }
         }
 
@@ -84,7 +87,7 @@ public class MapManager{
         {
             for (int j = 0; j < mapData.GetLength(1); j++)
             {
-                GameObject TempShadow = Instantiate(Shadow, ShadowParent);
+                GameObject TempShadow = Object.Instantiate(Shadow, ShadowParent);
                 TempShadow.transform.position = GetPositionFromIndex(j, i);
                 Shadows[i, j] = TempShadow;
                 TempShadow.SetActive(false);
@@ -92,7 +95,7 @@ public class MapManager{
         }
 
         rounding = new int[20][];
-        for (int i = 1; i <= 20; i++)
+        for (int i = 1; i <= 19; i++)
         {
             rounding[i] = new int[i + 1];
             for (int j = 1; j <= i; j++)
@@ -100,22 +103,21 @@ public class MapManager{
                 rounding[i][j] = (int)Mathf.Min(j, Mathf.Round(i * Mathf.Cos(Mathf.Asin(j / (i + 0.5f)))));
             }
         }
-        ShadowCast(PlayerManager.Instance.transform.position ,12);
     }
 
-    private void GetIndexsFromPosition(Vector2 Position, out int RowIndex, out int ColumnIndex)
+    private static void GetIndexsFromPosition(Vector2 Position, out int RowIndex, out int ColumnIndex)
     {
         RowIndex = (int)Mathf.Round(((Position.x + 0.08f) * 100)) / 16 + 9;
         ColumnIndex = (7 - (int)Mathf.Round((Position.y - 0.08f) * 100) / 16);
     }
 
 
-    private Vector2 GetPositionFromIndex(int Row, int Column)
+    private static Vector2 GetPositionFromIndex(int Row, int Column)
     {
         return new Vector2(-1.52f + Row * 0.16f, 1.20f - Column * 0.16f);
     }
 
-    public bool[] PutShadowFlag(Vector2 PlayerPosition ,int Distance)
+    public static bool[] SetShadowFlag(Vector2 PlayerPosition ,int Distance)
     {
         int x, y;
         GetIndexsFromPosition(PlayerPosition, out x, out y);
@@ -142,9 +144,9 @@ public class MapManager{
         return fieldOfView;
     }
 
-    public void ShadowCast(Vector3 PlayerPosition,int Sight)
+    public static void ShadowCast(Vector3 PlayerPosition,int Sight)
     {
-        bool[] FlagShadow = PutShadowFlag(PlayerPosition, Sight);
+        bool[] FlagShadow = SetShadowFlag(PlayerPosition, Sight);
 
         for (int i = 0; i < mapData.GetLength(0); i++)
         {
@@ -162,9 +164,9 @@ public class MapManager{
         }
     }
 
-    private void scanSector(int cx, int cy, int m1, int m2, int m3, int m4)
+    private static void scanSector(int cx, int cy, int m1, int m2, int m3, int m4)
     {
-        obs.reset();
+        Obs.reset();
         for (int p = 1; p <= distance; p++)
         {
             float dq2 = 0.5f / p;
@@ -183,7 +185,7 @@ public class MapManager{
 
                     int pos = y * WIDTH + x;
 
-                    if (obs.isBlocked(a0) && obs.isBlocked(a1) && obs.isBlocked(a2))
+                    if (Obs.isBlocked(a0) && Obs.isBlocked(a1) && Obs.isBlocked(a2))
                     {
                         // Do nothing					
                     }
@@ -194,12 +196,22 @@ public class MapManager{
 
                     if (mapData[y,x] == 0)
                     {
-                        obs.add(a1, a2);
+                        Obs.add(a1, a2);
                     }
                 }
             }
-            obs.nextRow();
+            Obs.nextRow();
         }
+    }
+    public static void ConvertIndexTo2D(int TargetIndex, out int ColumnIndex, out int RowIndex)
+    {
+        ColumnIndex = TargetIndex / WIDTH;
+        RowIndex = TargetIndex & WIDTH;
+    }
+
+    public static int ConverIndexTo1D(int ColumnIndex, int RowIndex)
+    {
+        return ColumnIndex * WIDTH + RowIndex;
     }
 }
 
@@ -207,19 +219,21 @@ public class Obstacles
 {
 
     private static int SIZE = 8 * 8 / 2;
-    private static float[] a1 = new float[SIZE];
-    private static float[] a2 = new float[SIZE];
+    private float[] a1 = new float[SIZE];
+    private float[] a2 = new float[SIZE];
 
     private int length;
     private int limit;
 
-    public void reset()
+
+
+    public  void reset()
     {
         length = 0;
         limit = 0;
     }
 
-    public void add(float o1, float o2)
+    public  void add(float o1, float o2)
     {
 
         if (length > limit && o1 <= a2[length - 1])
@@ -234,7 +248,7 @@ public class Obstacles
         }
     }
 
-    public bool isBlocked(float a)
+    public  bool isBlocked(float a)
     {
         for (int i = 0; i < limit; i++)
         {
@@ -246,10 +260,11 @@ public class Obstacles
         return false;
     }
 
-    public void nextRow()
+    public  void nextRow()
     {
         limit = length;
     }
+
 }
 
 

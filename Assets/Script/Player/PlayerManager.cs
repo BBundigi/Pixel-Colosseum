@@ -68,6 +68,8 @@ public class PlayerManager : MonoBehaviour
         healthPoint = 100;
         attackPoint = 10;
         attackRange = 0.25f;
+
+        MapManager.ShadowCast(transform.position, 12);
     }
 
 public IEnumerator MovePosition(Vector3 TargetPosition)
@@ -83,7 +85,7 @@ public IEnumerator MovePosition(Vector3 TargetPosition)
         }
         transform.position = TargetPosition;
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, false);
-        MapManager.Instance.ShadowCast(transform.position, 12);
+        MapManager.ShadowCast(transform.position, 12);
         TurnManager.Instance.PlayerTurnEnd();
     }
 

@@ -8,8 +8,6 @@ public abstract class EnemyClass : MonoBehaviour {
     private int attackPoint;
     private float attackRange;
 
-    private bool isPlayerDeteched;
-
     public Animator Anim;
 
     public int Hp
@@ -66,6 +64,11 @@ public abstract class EnemyClass : MonoBehaviour {
                 return transform.position + new Vector3(-0.16f, 0.0f, 0.0f);
             }
         }
+        else if (EnemyToPlayer.x > 0 && EnemyToPlayer.y > 0)
+        {
+            return transform.position + new Vector3(0.16f, 0.16f, 0.0f);
+        }
+
         else if (EnemyToPlayer.x > 0 && EnemyToPlayer.y < 0)
         {
             return transform.position + new Vector3(0.16f, -0.16f,0.0f);
@@ -101,16 +104,29 @@ public abstract class EnemyClass : MonoBehaviour {
         TurnManager.Instance.EnemyTurnEnd();
     }
 
-    public void FindPlayer()
+    public bool FindPlayer()
     {
-        bool[] EnemySightFlag = MapManager.Instance.PutShadowFlag(transform.position, 12);
+        bool[] EnemySightFlag = MapManager.SetShadowFlag(transform.position, 12);
 
         for(int i =0; i < EnemySightFlag.Length; i++)
         {
             if(EnemySightFlag[i])
             {
-                 
+                int RowIndex;
+                int ColumnIndex;
+
+                MapManager.ConvertIndexTo2D(i, out ColumnIndex, out RowIndex);
+
+                if(MapManager.MapData[ColumnIndex,RowIndex] == TileState.Player)
+                {
+                    return = true;
+                }
+            }
+            else
+            {
+                continue;
             }
         }
+        return false;
     }
 }
