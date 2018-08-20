@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MoveDetectorManager : MonoBehaviour {
-    void OnTriggerEnter(Collider Other)
+    void OnTriggerEnter2D(Collider2D Other)
     {
         if(Other.CompareTag("Wall") || Other.CompareTag("EnemyBCForCheckTouch"))
         {

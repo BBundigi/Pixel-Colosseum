@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum TileState
+public enum eTileState
 {
     Shadow,
     BasicTile,
@@ -14,16 +14,16 @@ public enum TileState
 
 public class MapManager {
 
-    public static TileState[,] MapData
-    {
-        get
-        {
-            return mapData;
-        }
-    }
+    //public static TileState[,] MapData
+    //{
+    //    get
+    //    {
+    //        return mapData;
+    //    }
+    //}
 
     private static TextAsset MapDataText = Resources.Load<TextAsset>("MapDataText/MapDataText_Cave");
-    private static TileState[,] mapData;
+    private static eTileState[,] mapData;
 
     private static int WIDTH;
     private static int HEIGH;
@@ -44,13 +44,13 @@ public class MapManager {
 
     private static Obstacles Obs = new Obstacles();
 
-     static MapManager() { 
+    static MapManager() { 
 
         string StringMapData = MapDataText.ToString();
 
         string[] EachString = StringMapData.Split('\n');
 
-        mapData = new TileState[EachString.Length, EachString[0].Length - 1];
+        mapData = new eTileState[EachString.Length, EachString[0].Length - 1];
 
         for (int i = 0; i < mapData.GetLength(0); i++)
         {
@@ -58,11 +58,11 @@ public class MapManager {
             {
                 if (EachString[i][j] == '1')
                 {
-                    mapData[i,j] = TileState.BasicTile;
+                    mapData[i,j] = eTileState.BasicTile;
                 }
                 else
                 {
-                    mapData[i,j] = TileState.Wall;
+                    mapData[i,j] = eTileState.Wall;
                 }
             }
         }
@@ -99,14 +99,14 @@ public class MapManager {
 
     private static void GetIndexsFromPosition(Vector2 Position, out int RowIndex, out int ColumnIndex)
     {
-        RowIndex = (int)Mathf.Round(((Position.x + 0.08f) * 100)) / 16 + 9;
-        ColumnIndex = (7 - (int)Mathf.Round((Position.y - 0.08f) * 100) / 16);
+        RowIndex = (int)(Mathf.Round(Position.x + 6.016f) / 0.64f); ;
+        ColumnIndex = (int)(Mathf.Round(Position.y + 4.84f) / 0.64f);
     }
 
 
     private static Vector2 GetPositionFromIndex(int Row, int Column)
     {
-        return new Vector2(-1.52f + Row * 0.16f, 1.20f - Column * 0.16f);
+        return new Vector2(-6.016f + Row * 0.64f, 4.84f - Column * 0.64f);
     }
 
     public static bool[] SetShadowFlag(Vector2 PlayerPosition ,int Distance)
@@ -199,7 +199,7 @@ public class MapManager {
     public static void ConvertIndexTo2D(int TargetIndex, out int ColumnIndex, out int RowIndex)
     {
         ColumnIndex = TargetIndex / WIDTH;
-        RowIndex = TargetIndex & WIDTH;
+        RowIndex = TargetIndex % WIDTH;
     }
 
     public static int ConverIndexTo1D(int ColumnIndex, int RowIndex)
@@ -207,27 +207,56 @@ public class MapManager {
         return ColumnIndex * WIDTH + RowIndex;
     }
 
-    public static void SetTileState(Vector3 TargetPosition, TileState TargetTileState)
+    public static void SetTileState(Vector3 TargetPosition, eTileState TargetTileState)
     {
         int ColumnIndex;
         int RowIndex;
         GetIndexsFromPosition(TargetPosition, out ColumnIndex, out RowIndex);
 
-        MapData[ColumnIndex, RowIndex] = TargetTileState;
+        mapData[ColumnIndex, RowIndex] = TargetTileState;
     }
 
-    public static void SetTileState(int ColumnIndex, int RowIndex, TileState TargetTileState)
+    public static void SetTileState(int ColumnIndex, int RowIndex, eTileState TargetTileState)
     {
-        MapData[ColumnIndex, RowIndex] = TargetTileState;
+        mapData[ColumnIndex, RowIndex] = TargetTileState;
     }
 
-    public static void SetTileState(int Index1D, TileState TargetTileState)
+    public static void SetTileState(int Index1D, eTileState TargetTileState)
     {
         int ColumnIndex;
         int RowIndex;
         ConvertIndexTo2D(Index1D, out ColumnIndex, out RowIndex);
 
-        MapData[ColumnIndex, RowIndex] = TargetTileState;
+        mapData[ColumnIndex, RowIndex] = TargetTileState;
+    }
+
+    public static eTileState GetTileState(Vector3 TargetPosition)
+    {
+        int ColumnIndex;
+        int RowIndex;
+        GetIndexsFromPosition(TargetPosition, out ColumnIndex, out RowIndex);
+
+        return mapData[ColumnIndex, RowIndex];
+    }
+    
+    public static eTileState GetTileState(int Index1D)
+    {
+        int ColumnIndex;
+        int RowIndex;
+
+        ConvertIndexTo2D(Index1D, out ColumnIndex, out RowIndex);
+
+        return mapData[ColumnIndex, RowIndex];
+    }
+
+    public static eTileState GetTileState(int ColumnIndex, int Rowindex)
+    {
+        return mapData[ColumnIndex, Rowindex];
+    }
+
+    public static void SetEnemyDefaultDestination()
+    {
+
     }
 }
 

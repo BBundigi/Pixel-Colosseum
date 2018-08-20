@@ -70,40 +70,40 @@ public abstract class EnemyClass : MonoBehaviour {
         {
             if (Destination.y > 0)
             {
-                return transform.position + new Vector3(0.0f, 0.16f, 0.0f);
+                return transform.position + new Vector3(0.0f, 0.64f, 0.0f);
             }
             else
             {
-                return transform.position + new Vector3(0.0f, -0.16f, 0.0f);
+                return transform.position + new Vector3(0.0f, -0.64f, 0.0f);
             }
         }
         else if ((int)Mathf.Round(Destination.y * 100) == 0)
         {
             if (Destination.x > 0)
             {
-                return transform.position + new Vector3(0.16f,0.0f, 0.0f);
+                return transform.position + new Vector3(0.64f,0.0f, 0.0f);
             }
             else
             {
-                return transform.position + new Vector3(-0.16f, 0.0f, 0.0f);
+                return transform.position + new Vector3(-0.64f, 0.0f, 0.0f);
             }
         }
         else if (Destination.x > 0 && Destination.y > 0)
         { 
-            return transform.position + new Vector3(0.16f, 0.16f, 0.0f);
+            return transform.position + new Vector3(0.64f, 0.64f, 0.0f);
         }
 
         else if (Destination.x > 0 && Destination.y < 0)
         {
-            return transform.position + new Vector3(0.16f, -0.16f,0.0f);
+            return transform.position + new Vector3(0.64f, -0.64f,0.0f);
         }
         else if (Destination.x < 0 && Destination.y > 0) 
         {
-            return transform.position + new Vector3(-0.16f, 0.16f, 0.0f);
+            return transform.position + new Vector3(-0.64f, 0.64f, 0.0f);
         }
         else if(Destination.x < 0 && Destination.y < 0)
         {
-            return transform.position + new Vector3(-0.16f, -0.16f, 0.0f);
+            return transform.position + new Vector3(-0.64f, -0.64f, 0.0f);
         }
 
         return transform.position;
@@ -136,12 +136,7 @@ public abstract class EnemyClass : MonoBehaviour {
         {
             if(EnemySightFlag[i])
             {
-                int RowIndex;
-                int ColumnIndex;
-
-                MapManager.ConvertIndexTo2D(i, out ColumnIndex, out RowIndex);
-
-                if(MapManager.MapData[ColumnIndex,RowIndex] == TileState.Player)
+                if(MapManager.GetTileState(i) == eTileState.Player)
                 {
                     return true;
                 }

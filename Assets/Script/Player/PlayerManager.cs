@@ -71,8 +71,7 @@ public class PlayerManager : MonoBehaviour
 
         MapManager.ShadowCast(transform.position, 12);
     }
-
-public IEnumerator MovePosition(Vector3 TargetPosition)
+    public IEnumerator MovePosition(Vector3 TargetPosition)
     {
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, true);
         Vector3 MovePointPerSecond = (TargetPosition - transform.position) / 15;
@@ -86,7 +85,7 @@ public IEnumerator MovePosition(Vector3 TargetPosition)
         transform.position = TargetPosition;
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, false);
         MapManager.ShadowCast(transform.position, 12);
-        MapManager.SetTileState(transform.position, TileState.Player);
+        MapManager.SetTileState(transform.position, eTileState.Player);
         TurnManager.Instance.PlayerTurnEnd();
     }
 

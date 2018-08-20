@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TouchManager : MonoBehaviour {
-    private Collider[] TouchDetectors;
-    private int TouchLayer = 512;
+    private Collider2D[] TouchDetectors;
+
     public static TouchManager Instance;
 
     void Awake()
@@ -22,7 +22,7 @@ public class TouchManager : MonoBehaviour {
         }
     }
 	void Start () {
-        TouchDetectors = GameObject.FindWithTag("Player").GetComponentsInChildren<BoxCollider>();
+        TouchDetectors = GameObject.FindWithTag("Player").GetComponentsInChildren<BoxCollider2D>();
     }
     void OnEnable()
     {
@@ -36,14 +36,11 @@ public class TouchManager : MonoBehaviour {
     }
     void Update()
     {
+
         if (Input.GetMouseButtonDown(0))
         {
-            Vector3 MousePosition = Input.mousePosition;
-            Vector3 StartPosition = Camera.main.ScreenToWorldPoint(new Vector3(MousePosition.x, MousePosition.y, Camera.main.nearClipPlane));
-            Vector3 EndPosition = Camera.main.ScreenToWorldPoint(new Vector3(MousePosition.x, MousePosition.y, Camera.main.farClipPlane));
-            Ray Vim = new Ray(StartPosition, EndPosition - StartPosition);
-            RaycastHit hit;
-            if (Physics.Raycast(Vim, out hit, 100, TouchLayer))
+            RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+            if (hit)
             {
                 if (hit.collider.CompareTag("MoveDetector"))
                 {
@@ -52,7 +49,7 @@ public class TouchManager : MonoBehaviour {
                 }
                 else if (hit.collider.CompareTag("EnemyBCForCheckTouch"))
                 {
-                    if ((PlayerManager.Instance.transform.position - hit.transform.position).magnitude < PlayerManager.Instance.AttackRange)
+                    if (MapManager.GetTileState(hit.transform.position) == eTileState.Enemy)
                     {
                         EnemyClass Target = hit.collider.GetComponentInParent<EnemyClass>();
                         PlayerManager.Instance.PlayerAttack(Target);

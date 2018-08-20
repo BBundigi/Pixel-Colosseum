@@ -54,7 +54,8 @@ abstract public class EnemyStateMachine : MonoBehaviour {
             yield return null;
         }
 
-        MapManager.SetTileState(transform.position, TileState.Enemy);
+        MapManager.SetTileState(transform.position, eTileState.Enemy);
+        TurnManager.Instance.EnemyTurnEnd();
         AttachedEnemy.Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, false);
     }
 
