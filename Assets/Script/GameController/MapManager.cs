@@ -32,13 +32,6 @@ public class MapManager {
     private static bool[] fieldOfView;
 
     private static int[][] rounding;
-    
-    // MapData[x,y] = 0 -> Wall
-    //              = 1 -> Tile
-    //              = 2 -> Player
-    //              = 3 -> Enemy
-    //              = 4 -> Shadow
-    // Use this for initialization
 
     private int SightDistance;
 
@@ -68,7 +61,6 @@ public class MapManager {
                     mapData[i,j] = TileState.BasicTile;
                 }
                 else
-
                 {
                     mapData[i,j] = TileState.Wall;
                 }
@@ -130,6 +122,7 @@ public class MapManager {
         {
             fieldOfView[i] = false;
         }
+        Debug.Log(x + " " + y);
         fieldOfView[y * WIDTH + x] = true;
 
         scanSector(x, y, +1, +1, 0, 0);
@@ -213,19 +206,39 @@ public class MapManager {
     {
         return ColumnIndex * WIDTH + RowIndex;
     }
+
+    public static void SetTileState(Vector3 TargetPosition, TileState TargetTileState)
+    {
+        int ColumnIndex;
+        int RowIndex;
+        GetIndexsFromPosition(TargetPosition, out ColumnIndex, out RowIndex);
+
+        MapData[ColumnIndex, RowIndex] = TargetTileState;
+    }
+
+    public static void SetTileState(int ColumnIndex, int RowIndex, TileState TargetTileState)
+    {
+        MapData[ColumnIndex, RowIndex] = TargetTileState;
+    }
+
+    public static void SetTileState(int Index1D, TileState TargetTileState)
+    {
+        int ColumnIndex;
+        int RowIndex;
+        ConvertIndexTo2D(Index1D, out ColumnIndex, out RowIndex);
+
+        MapData[ColumnIndex, RowIndex] = TargetTileState;
+    }
 }
 
 public class Obstacles
 {
-
     private static int SIZE = 8 * 8 / 2;
     private float[] a1 = new float[SIZE];
     private float[] a2 = new float[SIZE];
 
     private int length;
     private int limit;
-
-
 
     public  void reset()
     {

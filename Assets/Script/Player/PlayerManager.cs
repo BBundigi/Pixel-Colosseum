@@ -86,6 +86,7 @@ public IEnumerator MovePosition(Vector3 TargetPosition)
         transform.position = TargetPosition;
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, false);
         MapManager.ShadowCast(transform.position, 12);
+        MapManager.SetTileState(transform.position, TileState.Player);
         TurnManager.Instance.PlayerTurnEnd();
     }
 

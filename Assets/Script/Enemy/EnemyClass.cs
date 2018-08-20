@@ -8,6 +8,22 @@ public abstract class EnemyClass : MonoBehaviour {
     private int attackPoint;
     private float attackRange;
 
+    private Vector3 [][] defaultDestination;
+    private int DDPivot;//Default Destination Pivot
+
+    public Vector3 [][] DefaultDestination
+    {
+        set
+        {
+            defaultDestination = value;
+        }
+        get
+        {
+            return defaultDestination;
+        }
+    }
+
+
     public Animator Anim;
 
     public int Hp
@@ -38,13 +54,21 @@ public abstract class EnemyClass : MonoBehaviour {
         }
     }
 
-    public Vector2 FindMovePosition()
+    public Vector2 FindMovePosition( bool ToPlayer)
     {
-        Vector2 EnemyToPlayer = PlayerManager.Instance.transform.position - transform.position;
-
-        if ((int)Mathf.Round(EnemyToPlayer.x * 100) == 0)
+        Vector2 Destination;
+        if (ToPlayer)
         {
-            if (EnemyToPlayer.y > 0)
+            Destination = PlayerManager.Instance.transform.position  - transform.position;
+        }
+        else
+        {
+            Destination = DefaultDestination[DDPivot][0] - transform.position;
+        }
+
+        if ((int)Mathf.Round(Destination.x * 100) == 0)
+        {
+            if (Destination.y > 0)
             {
                 return transform.position + new Vector3(0.0f, 0.16f, 0.0f);
             }
@@ -53,9 +77,9 @@ public abstract class EnemyClass : MonoBehaviour {
                 return transform.position + new Vector3(0.0f, -0.16f, 0.0f);
             }
         }
-        else if ((int)Mathf.Round(EnemyToPlayer.y * 100) == 0)
+        else if ((int)Mathf.Round(Destination.y * 100) == 0)
         {
-            if (EnemyToPlayer.x > 0)
+            if (Destination.x > 0)
             {
                 return transform.position + new Vector3(0.16f,0.0f, 0.0f);
             }
@@ -64,20 +88,20 @@ public abstract class EnemyClass : MonoBehaviour {
                 return transform.position + new Vector3(-0.16f, 0.0f, 0.0f);
             }
         }
-        else if (EnemyToPlayer.x > 0 && EnemyToPlayer.y > 0)
-        {
+        else if (Destination.x > 0 && Destination.y > 0)
+        { 
             return transform.position + new Vector3(0.16f, 0.16f, 0.0f);
         }
 
-        else if (EnemyToPlayer.x > 0 && EnemyToPlayer.y < 0)
+        else if (Destination.x > 0 && Destination.y < 0)
         {
             return transform.position + new Vector3(0.16f, -0.16f,0.0f);
         }
-        else if (EnemyToPlayer.x < 0 && EnemyToPlayer.y > 0) 
+        else if (Destination.x < 0 && Destination.y > 0) 
         {
             return transform.position + new Vector3(-0.16f, 0.16f, 0.0f);
         }
-        else if(EnemyToPlayer.x < 0 && EnemyToPlayer.y < 0)
+        else if(Destination.x < 0 && Destination.y < 0)
         {
             return transform.position + new Vector3(-0.16f, -0.16f, 0.0f);
         }
@@ -119,7 +143,7 @@ public abstract class EnemyClass : MonoBehaviour {
 
                 if(MapManager.MapData[ColumnIndex,RowIndex] == TileState.Player)
                 {
-                    return = true;
+                    return true;
                 }
             }
             else
@@ -127,6 +151,36 @@ public abstract class EnemyClass : MonoBehaviour {
                 continue;
             }
         }
+        SetTraformPivot();
         return false;
+    }
+    public void SetTraformPivot()
+    {
+        float ShortestMagnitude = 0;
+        for(int i =0; i < DefaultDestination.Length; i++)
+        {
+            float NowMagniutde = (DefaultDestination[i][0] - transform.position).magnitude;
+            if ((DefaultDestination[i][0] - transform.position).magnitude < ShortestMagnitude)
+            {
+                DDPivot = i;
+            }
+        }
+    }
+
+    public void UpdateTransformPivot()
+    {
+        if (transform.position == DefaultDestination[DDPivot][0])
+        {
+            int RandomTransform = Random.Range(0, defaultDestination[DDPivot].Length);
+
+            for (int i = 0; i < defaultDestination.Length; i++)
+            {
+                if (defaultDestination[DDPivot][RandomTransform] == defaultDestination[i][0])
+                {
+                    DDPivot = i;
+                    break;
+                }
+            }
+        }
     }
 }
