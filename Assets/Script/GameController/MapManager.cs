@@ -101,19 +101,41 @@ public class MapManager {
     }
 
     private static void GetIndexsFromPosition(Vector2 Position, out int RowIndex, out int ColumnIndex)
-    {
-        
-        RowIndex = (int)(Mathf.Round((Position.x + 6.016f) * 1000) / 1000 / 0.64f);
-        
-        ColumnIndex = (int)(Mathf.Round((Position.y + 4.84f) * 10000) / 0.64f);
-        Debug.Log(RowIndex);
-        Debug.Log(ColumnIndex);
+    {   
+        RowIndex = (int)((Mathf.Round((Position.x + 6.016f) * 1000)) / 1000 / 0.64f);
+        ColumnIndex = (int)((Mathf.Round((5.4f - Position.y) * 1000)) / 1000 / 0.64f);
     }
-
+    //public static void GetIndexsFromPositionForDebug(Vector2 Position)
+    //{
+    //    int RowIndex = (int)((Mathf.Round((Position.x + 6.016f) * 1000)) / 1000 / 0.64f);
+    //    int ColumnIndex = (int)((Mathf.Round((5.4f - Position.y) * 1000)) / 1000 / 0.64f);
+    //    Debug.Log(RowIndex);
+    //    Debug.Log(ColumnIndex);
+    //}
 
     private static Vector2 GetPositionFromIndex(int Row, int Column)
     {
-        return new Vector2(-6.016f + Row * 0.64f, 4.84f - Column * 0.64f);
+        return new Vector2(-6.016f + Row * 0.64f, 5.4f - Column * 0.64f);
+    }
+
+    public static void ShadowCast(Vector3 PlayerPosition,int Sight)
+    {
+        bool[] FlagShadow = SetShadowFlag(PlayerPosition, Sight);
+
+        for (int i = 0; i < mapData.GetLength(0); i++)
+        {
+            for (int j = 0; j < mapData.GetLength(1); j++)
+            {
+                if (FlagShadow[i * WIDTH + j])
+                {
+                    Shadows[i, j].SetActive(false);
+                }
+                else
+                {
+                    Shadows[i, j].SetActive(true);
+                }
+            }
+        }
     }
 
     public static bool[] SetShadowFlag(Vector2 PlayerPosition ,int Distance)
@@ -143,25 +165,7 @@ public class MapManager {
         return fieldOfView;
     }
 
-    public static void ShadowCast(Vector3 PlayerPosition,int Sight)
-    {
-        bool[] FlagShadow = SetShadowFlag(PlayerPosition, Sight);
 
-        for (int i = 0; i < mapData.GetLength(0); i++)
-        {
-            for (int j = 0; j < mapData.GetLength(1); j++)
-            {
-                if (FlagShadow[i * WIDTH + j])
-                {
-                    Shadows[i, j].SetActive(false);
-                }
-                else
-                {
-                    Shadows[i, j].SetActive(true);
-                }
-            }
-        }
-    }
 
     private static void scanSector(int cx, int cy, int m1, int m2, int m3, int m4)
     {
@@ -243,8 +247,8 @@ public class MapManager {
         
         GetIndexsFromPosition(TargetPosition, out RowIndex, out ColumnIndex);
 
-        Debug.Log(RowIndex + " " + ColumnIndex);
-        Debug.Log(mapData[ColumnIndex, RowIndex]);
+        //Debug.Log(RowIndex + " " + ColumnIndex);
+        //Debug.Log(mapData[ColumnIndex, RowIndex]);
         return mapData[ColumnIndex, RowIndex];
     }
     

@@ -69,7 +69,7 @@ public class PlayerManager : MonoBehaviour
         attackPoint = 1000;
         attackRange = 0.25f;
 
-        MapManager.ShadowCast(transform.position, 15);
+        MapManager.ShadowCast(transform.position, 8);
     }
     public IEnumerator MovePosition(Vector3 TargetPosition)
     {
@@ -85,7 +85,8 @@ public class PlayerManager : MonoBehaviour
         }
         transform.position = TargetPosition;
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, false);
-        MapManager.ShadowCast(transform.position, 12);
+        MapManager.ShadowCast(transform.position, 8);
+
         MapManager.SetTileState(transform.position, eTileState.Player);
         TurnManager.Instance.PlayerTurnEnd();
     }
