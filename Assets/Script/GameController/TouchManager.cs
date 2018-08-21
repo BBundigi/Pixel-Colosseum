@@ -42,7 +42,8 @@ public class TouchManager : MonoBehaviour {
             RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
             if (hit)
             {
-                if (hit.collider.CompareTag("MoveDetector"))
+                if (hit.collider.CompareTag("MoveDetector")
+                            && MapManager.GetTileState(hit.transform.position) != eTileState.Wall)
                 {
                     StartCoroutine(PlayerManager.Instance.MovePosition(hit.transform.position));
                     enabled = false;

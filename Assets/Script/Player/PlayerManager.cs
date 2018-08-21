@@ -66,15 +66,16 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         healthPoint = 100;
-        attackPoint = 10;
+        attackPoint = 1000;
         attackRange = 0.25f;
 
-        MapManager.ShadowCast(transform.position, 12);
+        MapManager.ShadowCast(transform.position, 15);
     }
     public IEnumerator MovePosition(Vector3 TargetPosition)
     {
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, true);
         Vector3 MovePointPerSecond = (TargetPosition - transform.position) / 15;
+        MapManager.SetTileState(transform.position, eTileState.BasicTile);
         ChangeDirection(TargetPosition);
 
         while (transform.position != TargetPosition)

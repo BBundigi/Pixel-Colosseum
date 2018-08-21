@@ -8,20 +8,20 @@ public abstract class EnemyClass : MonoBehaviour {
     private int attackPoint;
     private float attackRange;
 
-    private Vector3 [][] defaultDestination;
-    private int DDPivot;//Default Destination Pivot
+    protected Vector3 [][] defaultDestination;
+    protected int DDPivot;//Default Destination Pivot
 
-    public Vector3 [][] DefaultDestination
-    {
-        set
-        {
-            defaultDestination = value;
-        }
-        get
-        {
-            return defaultDestination;
-        }
-    }
+    //public Vector3 [][] DefaultDestination
+    //{
+    //    set
+    //    {
+    //        defaultDestination = value;
+    //    }
+    //    get
+    //    {
+    //        return defaultDestination;
+    //    }
+    //}
 
 
     public Animator Anim;
@@ -53,18 +53,22 @@ public abstract class EnemyClass : MonoBehaviour {
             attackRange = value;
         }
     }
-
     public Vector2 FindMovePosition( bool ToPlayer)
     {
         Vector2 Destination;
+        
         if (ToPlayer)
         {
             Destination = PlayerManager.Instance.transform.position  - transform.position;
         }
         else
         {
-            Destination = DefaultDestination[DDPivot][0] - transform.position;
+            Destination = defaultDestination[DDPivot][0] - transform.position;
         }
+        //Debug.Log((int)Mathf.Round(Destination.x * 100));
+        //Debug.Log(Destination.x);
+        //Debug.Log((int)Mathf.Round(Destination.y * 100));
+        //Debug.Log(Destination.y);
 
         if ((int)Mathf.Round(Destination.x * 100) == 0)
         {
@@ -130,14 +134,15 @@ public abstract class EnemyClass : MonoBehaviour {
 
     public bool FindPlayer()
     {
-        bool[] EnemySightFlag = MapManager.SetShadowFlag(transform.position, 12);
-
-        for(int i =0; i < EnemySightFlag.Length; i++)
+        bool[] EnemySightFlag = MapManager.SetShadowFlag(transform.position, 8);
+        for (int i = 0; i < EnemySightFlag.Length; i++)
         {
-            if(EnemySightFlag[i])
+
+            if (EnemySightFlag[i])
             {
-                if(MapManager.GetTileState(i) == eTileState.Player)
+                if (MapManager.GetTileState(i) == eTileState.Player)
                 {
+                    DDPivot = -1;
                     return true;
                 }
             }
@@ -151,25 +156,35 @@ public abstract class EnemyClass : MonoBehaviour {
     }
     public void SetTraformPivot()
     {
-        float ShortestMagnitude = 0;
-        for(int i =0; i < DefaultDestination.Length; i++)
+        if(DDPivot != -1)
         {
-            float NowMagniutde = (DefaultDestination[i][0] - transform.position).magnitude;
-            if ((DefaultDestination[i][0] - transform.position).magnitude < ShortestMagnitude)
+            return;
+        }
+        float ShortestMagnitude = Mathf.Infinity;
+        
+        for (int i =0; i < defaultDestination.Length; i++)
+        {
+            float NowMagniutde = (defaultDestination[i][0] - transform.position).magnitude;
+            if (ShortestMagnitude > NowMagniutde)
             {
                 DDPivot = i;
+                ShortestMagnitude = NowMagniutde;
             }
+            
         }
+        Debug.Log(DDPivot);
     }
 
     public void UpdateTransformPivot()
     {
-        if (transform.position == DefaultDestination[DDPivot][0])
+        Debug.Log((transform.position - defaultDestination[DDPivot][0]).magnitude);
+        if (Mathf.Round((transform.position - defaultDestination[DDPivot][0]).magnitude * 100f) == 0)
         {
-            int RandomTransform = Random.Range(0, defaultDestination[DDPivot].Length);
-
+            int RandomTransform = Random.Range(1, defaultDestination[DDPivot].Length);
+            Debug.Log("RandomTransform: " + RandomTransform);
             for (int i = 0; i < defaultDestination.Length; i++)
             {
+                Debug.Log(defaultDestination[DDPivot][RandomTransform] == defaultDestination[i][0]);
                 if (defaultDestination[DDPivot][RandomTransform] == defaultDestination[i][0])
                 {
                     DDPivot = i;
