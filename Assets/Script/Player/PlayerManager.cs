@@ -8,7 +8,7 @@ public class PlayerManager : MonoBehaviour
     // Use this for initialization
     private int healthPoint, attackPoint;
 
-    private int x, y;
+    private Vector2 Position;
     private float attackRange;
 
     public int HealthPoint
@@ -70,7 +70,6 @@ public class PlayerManager : MonoBehaviour
         healthPoint = 100;
         attackPoint = 1000;
         attackRange = 0.25f;
-
         //MapManager.ShadowCast(transform.position, 8);
     }
     public IEnumerator MovePosition(Vector3 TargetPosition)
@@ -112,5 +111,10 @@ public class PlayerManager : MonoBehaviour
     {
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, false);
         TurnManager.Instance.PlayerTurnEnd();
+    }
+
+    public void SetPosition()
+    {
+        MapManager.ConvertPositionToIndexs(transform.position, out Position);
     }
 }

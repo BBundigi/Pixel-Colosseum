@@ -10,5 +10,6 @@ public class SkeletonKingManager : EnemyClass {
         AttackRange = 0.92f;
         DDPivot = -1;
         defaultDestination = MapManager.EnemyDefaultDestination;
+        SetPosition();
     }
 }

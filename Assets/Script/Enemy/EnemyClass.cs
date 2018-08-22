@@ -56,7 +56,8 @@ public abstract class EnemyClass : MonoBehaviour {
     }
     public void SetPosition()
     {
-        MapManager.ConvertPositionToIndexs(transform.position, Position);
+        MapManager.ConvertPositionToIndexs(transform.position,out Position);
+        Debug.Log("Position : " + Position);
     }
 
     public Vector2 FindMovePosition()
@@ -66,6 +67,11 @@ public abstract class EnemyClass : MonoBehaviour {
 
         if (Destination.x == -1 && Destination.y == -1)
         {
+            if(DDPivot == -1)
+            {
+                SetDDPivot();
+            }
+            UpdateTransformPivot();
             Destination = defaultDestination[DDPivot][0];
         }
 
@@ -75,11 +81,11 @@ public abstract class EnemyClass : MonoBehaviour {
         {
             if (Destination.y > 0)
             {
-                return MapManager.ConvertIndexsToPosition((int)Position.x, (int)Position.y + 1);
+                return MapManager.ConvertIndexsToPosition((int)Position.x, (int)Position.y - 1);
             }
             else
             {
-                return MapManager.ConvertIndexsToPosition((int)Position.x, (int)Position.y - 1);
+                return MapManager.ConvertIndexsToPosition((int)Position.x, (int)Position.y + 1);
             }
         }
         else if (Destination.y == 0)
@@ -96,10 +102,10 @@ public abstract class EnemyClass : MonoBehaviour {
         else if (Destination.x > 0 && Destination.y > 0)
         {
 
-            Vector2 ReturnPosition = Position + new Vector2(1, 1);
+            Vector2 ReturnPosition = Position + new Vector2(1, -1);
             if (MapManager.GetTileState(ReturnPosition) == eTileState.Wall)
             {
-                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y - 1);
+                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y + 1);
                 Vector2 yTempVector2 = new Vector2(ReturnPosition.x - 1, ReturnPosition.y);
                 if (MapManager.GetTileState((int)xTempVector2.x, (int)xTempVector2.y) != eTileState.Wall)
                 {
@@ -119,10 +125,10 @@ public abstract class EnemyClass : MonoBehaviour {
 
         else if (Destination.x > 0 && Destination.y < 0)
         {
-            Vector2 ReturnPosition = Position + new Vector2(1, -1);
+            Vector2 ReturnPosition = Position + new Vector2(1, 1);
             if (MapManager.GetTileState(ReturnPosition) == eTileState.Wall)
             {
-                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y + 1);
+                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y - 1);
                 Vector2 yTempVector2 = new Vector2(ReturnPosition.x -1, ReturnPosition.y);
                 if (MapManager.GetTileState((int)xTempVector2.x, (int)xTempVector2.y) != eTileState.Wall)
                 {
@@ -141,10 +147,10 @@ public abstract class EnemyClass : MonoBehaviour {
 
         else if (Destination.x < 0 && Destination.y > 0)
         {
-            Vector2 ReturnPosition = Position + new Vector2(-1, 1);
+            Vector2 ReturnPosition = Position + new Vector2(-1, -1);
             if (MapManager.GetTileState(ReturnPosition) == eTileState.Wall)
             {
-                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y - 1);
+                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y + 1);
                 Vector2 yTempVector2 = new Vector2(ReturnPosition.x + 1, ReturnPosition.y);
                 if (MapManager.GetTileState((int)xTempVector2.x, (int)xTempVector2.y) != eTileState.Wall)
                 {
@@ -162,10 +168,10 @@ public abstract class EnemyClass : MonoBehaviour {
         }
         else if (Destination.x < 0 && Destination.y < 0)
         {
-            Vector2 ReturnPosition = Position + new Vector2(-1, -1);
+            Vector2 ReturnPosition = Position + new Vector2(-1, 1);
             if (MapManager.GetTileState(ReturnPosition) == eTileState.Wall)
             {
-                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y + 1);
+                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y - 1);
                 Vector2 yTempVector2 = new Vector2(ReturnPosition.x + 1, ReturnPosition.y);
                 if (MapManager.GetTileState((int)xTempVector2.x, (int)xTempVector2.y) != eTileState.Wall)
                 {
@@ -218,19 +224,15 @@ public abstract class EnemyClass : MonoBehaviour {
                     int TempY;
                     MapManager.ConvertIndexTo2D(i, out TempX, out TempY);
                     Destination = new Vector2(TempX, TempY);
+                    return;
                 }
-                return;
             }
         }
-        SetTraformPivot();
+        DDPivot = -1;
         return;
     }
-    public void SetTraformPivot()
+    public void SetDDPivot()
     {
-        if(DDPivot != -1)
-        {
-            return;
-        }
         float ShortestMagnitude = Mathf.Infinity;
         
         for (int i =0; i < defaultDestination.Length; i++)
@@ -247,6 +249,9 @@ public abstract class EnemyClass : MonoBehaviour {
 
     public void UpdateTransformPivot()
     {
+        //Debug.Log(Position);
+        //Debug.Log(defaultDestination[DDPivot][0]);
+        //Debug.Log((Position - defaultDestination[DDPivot][0]).magnitude);
         if ((Position - defaultDestination[DDPivot][0]).magnitude == 0)
         {
             int RandomTransform = Random.Range(1, defaultDestination[DDPivot].Length);
@@ -258,6 +263,7 @@ public abstract class EnemyClass : MonoBehaviour {
                     break;
                 }
             }
+            //Debug.Log(DDPivot);
         }
     }
 }
