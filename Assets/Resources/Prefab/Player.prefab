@@ -99,6 +99,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4065552723770904}
   - component: {fileID: 61223814898180452}
+  - component: {fileID: 114808481729923338}
   m_Layer: 0
   m_Name: TouchDector
   m_TagString: MoveDetector
@@ -529,6 +530,17 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &114808481729923338
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1608710782513016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9b43ff74b7fd5a44a735fe22a46c3f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114875937469502482
 MonoBehaviour:
   m_ObjectHideFlags: 1

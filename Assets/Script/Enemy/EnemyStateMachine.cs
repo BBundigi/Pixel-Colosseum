@@ -35,19 +35,8 @@ abstract public class EnemyStateMachine : MonoBehaviour {
     protected virtual IEnumerator MoveState()
     {
         AttachedEnemy.Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, true);
-        
-        Vector3 TargetPosition;
-        MapManager.SetTileState(transform.position, eTileState.BasicTile);
-        Debug.Log(AttachedEnemy.FindPlayer());
-        if (AttachedEnemy.FindPlayer())
-        {   
-            TargetPosition = AttachedEnemy.FindMovePosition(true);
-        }
-        else
-        {
-            AttachedEnemy.UpdateTransformPivot();
-            TargetPosition = AttachedEnemy.FindMovePosition(false);
-        }
+
+        Vector3 TargetPosition = AttachedEnemy.FindMovePosition();
         AttachedEnemy.ChangeDirection(TargetPosition);
         Vector3 MovePointPerSecond = (TargetPosition - transform.position) / 15;
         
