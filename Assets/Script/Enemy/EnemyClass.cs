@@ -85,7 +85,7 @@ public abstract class EnemyClass : MonoBehaviour {
         {
             if (Destination.x > 0)
             {
-                return transform.position + new Vector3(0.64f,0.0f, 0.0f);
+                return transform.position + new Vector3(0.64f, 0.0f, 0.0f);
             }
             else
             {
@@ -93,30 +93,100 @@ public abstract class EnemyClass : MonoBehaviour {
             }
         }
         else if (Destination.x > 0 && Destination.y > 0)
-        { 
-            return transform.position + new Vector3(0.64f, 0.64f, 0.0f);
+        {
+            Vector3 ReturnPosition = transform.position + new Vector3(0.64f, 0.64f, 0.0f);
+
+            if (MapManager.GetTileState(ReturnPosition) == eTileState.Wall)
+            {
+                Vector3 xTempVector3 = new Vector3(ReturnPosition.x, ReturnPosition.y - 0.64f, 0.0f);
+                Vector3 yTempVetor3 = new Vector3(ReturnPosition.x - 0.64f, ReturnPosition.y, 0.0f);
+                if (MapManager.GetTileState(xTempVector3) != eTileState.Wall)
+                {
+                    return xTempVector3;
+                }
+                else
+                {
+                    return yTempVetor3;
+                }
+            }
+            else
+            {
+                return ReturnPosition;
+            }
         }
 
         else if (Destination.x > 0 && Destination.y < 0)
         {
-            return transform.position + new Vector3(0.64f, -0.64f,0.0f);
+            Vector3 ReturnPosition = transform.position + new Vector3(0.64f, -0.64f, 0.0f);
+            if (MapManager.GetTileState(ReturnPosition) == eTileState.Wall)
+            {
+                Vector3 xTempVector3 = new Vector3(ReturnPosition.x, ReturnPosition.y + 0.64f, 0.0f);
+                Vector3 yTempVetor3 = new Vector3(ReturnPosition.x - 0.64f, ReturnPosition.y, 0.0f);
+                if (MapManager.GetTileState(xTempVector3) != eTileState.Wall)
+                {
+                    return xTempVector3;
+                }
+                else
+                {
+                    return yTempVetor3;
+                }
+            }
+            else
+            {
+                return ReturnPosition;
+            }
         }
+    
         else if (Destination.x < 0 && Destination.y > 0) 
         {
-            return transform.position + new Vector3(-0.64f, 0.64f, 0.0f);
+            Vector3 ReturnPosition = transform.position + new Vector3(-0.64f, 0.64f, 0.0f);
+            if (MapManager.GetTileState(ReturnPosition) == eTileState.Wall)
+            {
+                Vector3 xTempVector3 = new Vector3(ReturnPosition.x, ReturnPosition.y - 0.64f, 0.0f);
+                Vector3 yTempVetor3 = new Vector3(ReturnPosition.x + 0.64f, ReturnPosition.y, 0.0f);
+                if (MapManager.GetTileState(xTempVector3) != eTileState.Wall)
+                {
+                    return xTempVector3;
+                }
+                else
+                {
+                    return yTempVetor3;
+                }
+            }
+            else
+            {
+                return ReturnPosition;
+            }
         }
         else if(Destination.x < 0 && Destination.y < 0)
         {
-            return transform.position + new Vector3(-0.64f, -0.64f, 0.0f);
+            Vector3 ReturnPosition = transform.position + new Vector3(-0.64f, -0.64f, 0.0f);
+            if (MapManager.GetTileState(ReturnPosition) == eTileState.Wall)
+            {
+                Vector3 xTempVector3 = new Vector3(ReturnPosition.x, ReturnPosition.y + 0.64f, 0.0f);
+                Vector3 yTempVetor3 = new Vector3(ReturnPosition.x + 0.64f, ReturnPosition.y, 0.0f);
+                if (MapManager.GetTileState(xTempVector3) != eTileState.Wall)
+                {
+                    return xTempVector3;
+                }
+                else
+                {
+                    return yTempVetor3;
+                }
+            }
+            else
+            {
+                return ReturnPosition;
+            }
         }
 
         return transform.position;
     }
 
-    public void ChangeDirection()
+    public void ChangeDirection(Vector3 TargetDirection)
     {
         transform.rotation = Quaternion.Euler(0,
-            PlayerManager.Instance.transform.position.x - transform.position.x < 0 ? 180 : 0,
+            TargetDirection.x - transform.position.x > 0 ? 0 : 180,
                                                0);
     }
 
@@ -172,19 +242,15 @@ public abstract class EnemyClass : MonoBehaviour {
             }
             
         }
-        Debug.Log(DDPivot);
     }
 
     public void UpdateTransformPivot()
     {
-        Debug.Log((transform.position - defaultDestination[DDPivot][0]).magnitude);
         if (Mathf.Round((transform.position - defaultDestination[DDPivot][0]).magnitude * 100f) == 0)
         {
             int RandomTransform = Random.Range(1, defaultDestination[DDPivot].Length);
-            Debug.Log("RandomTransform: " + RandomTransform);
             for (int i = 0; i < defaultDestination.Length; i++)
             {
-                Debug.Log(defaultDestination[DDPivot][RandomTransform] == defaultDestination[i][0]);
                 if (defaultDestination[DDPivot][RandomTransform] == defaultDestination[i][0])
                 {
                     DDPivot = i;
