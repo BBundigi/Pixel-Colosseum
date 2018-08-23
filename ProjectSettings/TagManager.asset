@@ -7,11 +7,11 @@ TagManager:
   - Wall
   - Enemy
   - TouchDetectorsParent
-  - AttackDetectorsParent
-  - AttackDetector
   - MoveDetector
   - EnemyBCForCheckTouch
   - ShadowParent
+  - Bumper
+  - Bumper2
   layers:
   - Default
   - TransparentFX
