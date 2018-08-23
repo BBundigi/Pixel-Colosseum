@@ -50,9 +50,9 @@ public class TouchManager : MonoBehaviour {
                 }
                 else if (hit.collider.CompareTag("EnemyBCForCheckTouch"))
                 {
-                    if (MapManager.GetTileState(hit.transform.position) == eTileState.Enemy)
+                    EnemyClass Target = hit.collider.GetComponentInParent<EnemyClass>();
+                    if ((Target.Position - PlayerManager.Instance.Position).magnitude < 2)
                     {
-                        EnemyClass Target = hit.collider.GetComponentInParent<EnemyClass>();
                         PlayerManager.Instance.PlayerAttack(Target);
                         enabled = false;
                     }

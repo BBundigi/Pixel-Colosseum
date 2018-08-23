@@ -5,8 +5,8 @@ using UnityEngine;
 public class TouchDetectorController : MonoBehaviour {
     void OnCollisionEnter2D(Collision2D Other)
     {
-        if(Other.collider.CompareTag("Enemy"))
-        { 
+        if(Other.collider.CompareTag("EnemyBCForCheckTouch"))
+        {
             gameObject.SetActive(false);
         }
     }

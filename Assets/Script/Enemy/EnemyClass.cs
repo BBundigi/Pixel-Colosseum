@@ -2,14 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class EnemyClass : MonoBehaviour {
-
+public abstract class EnemyClass : MonoBehaviour
+{
+    public Vector2 Position
+    {
+        get
+        {
+            return position;
+        }
+    }
     private int hp;
     private int attackPoint;
-    private Vector2 Position;
+    private Vector2 position;
     private float attackRange;
 
-    protected Vector2 [][] defaultDestination;
+    protected Vector2[][] defaultDestination;
     protected int DDPivot;//Default Destination Pivot
 
     //public Vector2 [][] DefaultDestination
@@ -29,7 +36,7 @@ public abstract class EnemyClass : MonoBehaviour {
 
     public int Hp
     {
-        get { return hp;}
+        get { return hp; }
         set
         {
             hp = value;
@@ -56,36 +63,33 @@ public abstract class EnemyClass : MonoBehaviour {
     }
     public void SetPosition()
     {
-        MapManager.ConvertPositionToIndexs(transform.position,out Position);
-        Debug.Log("Position : " + Position);
+        position = MapManager.ConvertWorldPositionToLocal(transform.position);
     }
 
     public Vector2 FindMovePosition()
     {
-        Vector2 Destination = new Vector2(-1.0f, -1.0f);
-        FindPlayer(Destination);
+        Vector2 Destination = FindPlayer();
 
-        if (Destination.x == -1 && Destination.y == -1)
+        if (Destination.x == -1)
         {
-            if(DDPivot == -1)
+            if (DDPivot == -1)
             {
                 SetDDPivot();
             }
             UpdateTransformPivot();
             Destination = defaultDestination[DDPivot][0];
         }
-
         Destination -= Position;
 
         if (Destination.x == 0)
         {
             if (Destination.y > 0)
             {
-                return MapManager.ConvertIndexsToPosition((int)Position.x, (int)Position.y - 1);
+                return MapManager.ConvertIndexsToPosition((int)Position.x, (int)Position.y + 1);
             }
             else
             {
-                return MapManager.ConvertIndexsToPosition((int)Position.x, (int)Position.y + 1);
+                return MapManager.ConvertIndexsToPosition((int)Position.x, (int)Position.y - 1);
             }
         }
         else if (Destination.y == 0)
@@ -101,11 +105,10 @@ public abstract class EnemyClass : MonoBehaviour {
         }
         else if (Destination.x > 0 && Destination.y > 0)
         {
-
-            Vector2 ReturnPosition = Position + new Vector2(1, -1);
-            if (MapManager.GetTileState(ReturnPosition) == eTileState.Wall)
+            Vector2 ReturnPosition = Position + new Vector2(1, 1);
+            if (MapManager.GetTileState((int)ReturnPosition.x, (int)ReturnPosition.y) == eTileState.Wall)
             {
-                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y + 1);
+                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y - 1);
                 Vector2 yTempVector2 = new Vector2(ReturnPosition.x - 1, ReturnPosition.y);
                 if (MapManager.GetTileState((int)xTempVector2.x, (int)xTempVector2.y) != eTileState.Wall)
                 {
@@ -121,15 +124,13 @@ public abstract class EnemyClass : MonoBehaviour {
                 return MapManager.ConvertIndexsToPosition((int)ReturnPosition.x, (int)ReturnPosition.y);
             }
         }
-
-
         else if (Destination.x > 0 && Destination.y < 0)
         {
-            Vector2 ReturnPosition = Position + new Vector2(1, 1);
-            if (MapManager.GetTileState(ReturnPosition) == eTileState.Wall)
+            Vector2 ReturnPosition = Position + new Vector2(1, -1);
+            if (MapManager.GetTileState((int)ReturnPosition.x, (int)ReturnPosition.y) == eTileState.Wall)
             {
-                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y - 1);
-                Vector2 yTempVector2 = new Vector2(ReturnPosition.x -1, ReturnPosition.y);
+                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y + 1);
+                Vector2 yTempVector2 = new Vector2(ReturnPosition.x - 1, ReturnPosition.y);
                 if (MapManager.GetTileState((int)xTempVector2.x, (int)xTempVector2.y) != eTileState.Wall)
                 {
                     return MapManager.ConvertIndexsToPosition((int)xTempVector2.x, (int)xTempVector2.y);
@@ -147,10 +148,10 @@ public abstract class EnemyClass : MonoBehaviour {
 
         else if (Destination.x < 0 && Destination.y > 0)
         {
-            Vector2 ReturnPosition = Position + new Vector2(-1, -1);
-            if (MapManager.GetTileState(ReturnPosition) == eTileState.Wall)
+            Vector2 ReturnPosition = Position + new Vector2(-1, 1);
+            if (MapManager.GetTileState((int)ReturnPosition.x, (int)ReturnPosition.y) == eTileState.Wall)
             {
-                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y + 1);
+                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y - 1);
                 Vector2 yTempVector2 = new Vector2(ReturnPosition.x + 1, ReturnPosition.y);
                 if (MapManager.GetTileState((int)xTempVector2.x, (int)xTempVector2.y) != eTileState.Wall)
                 {
@@ -168,10 +169,10 @@ public abstract class EnemyClass : MonoBehaviour {
         }
         else if (Destination.x < 0 && Destination.y < 0)
         {
-            Vector2 ReturnPosition = Position + new Vector2(-1, 1);
-            if (MapManager.GetTileState(ReturnPosition) == eTileState.Wall)
+            Vector2 ReturnPosition = Position + new Vector2(-1, -1);
+            if (MapManager.GetTileState((int)ReturnPosition.x, (int)ReturnPosition.y) == eTileState.Wall)
             {
-                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y - 1);
+                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y + 1);
                 Vector2 yTempVector2 = new Vector2(ReturnPosition.x + 1, ReturnPosition.y);
                 if (MapManager.GetTileState((int)xTempVector2.x, (int)xTempVector2.y) != eTileState.Wall)
                 {
@@ -198,21 +199,23 @@ public abstract class EnemyClass : MonoBehaviour {
                                                0);
     }
 
+
     public void StopAttackAnim()
     {
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, false);
         TurnManager.Instance.EnemyTurnEnd();
     }
-    
+
     public void AfterDeadAnim()
     {
         Destroy(gameObject);
         TurnManager.Instance.EnemyTurnEnd();
     }
 
-    private void FindPlayer(Vector3 Destination)
+    private Vector2 FindPlayer()
     {
-        bool[] EnemySightFlag = MapManager.SetShadowFlag(transform.position, 8);
+        bool[] EnemySightFlag = ShadowCaster.SetShadowFlag(transform.position, 8);
+        Vector2 Destination;
         for (int i = 0; i < EnemySightFlag.Length; i++)
         {
             if (EnemySightFlag[i])
@@ -224,18 +227,19 @@ public abstract class EnemyClass : MonoBehaviour {
                     int TempY;
                     MapManager.ConvertIndexTo2D(i, out TempX, out TempY);
                     Destination = new Vector2(TempX, TempY);
-                    return;
+                    return Destination;
                 }
             }
         }
-        DDPivot = -1;
-        return;
+        Destination = new Vector2(-1, 0);
+
+        return Destination;
     }
     public void SetDDPivot()
     {
         float ShortestMagnitude = Mathf.Infinity;
-        
-        for (int i =0; i < defaultDestination.Length; i++)
+
+        for (int i = 0; i < defaultDestination.Length; i++)
         {
             float NowMagniutde = (defaultDestination[i][0] - Position).magnitude;
             if (ShortestMagnitude > NowMagniutde)
@@ -243,7 +247,7 @@ public abstract class EnemyClass : MonoBehaviour {
                 DDPivot = i;
                 ShortestMagnitude = NowMagniutde;
             }
-            
+
         }
     }
 
@@ -252,6 +256,7 @@ public abstract class EnemyClass : MonoBehaviour {
         //Debug.Log(Position);
         //Debug.Log(defaultDestination[DDPivot][0]);
         //Debug.Log((Position - defaultDestination[DDPivot][0]).magnitude);
+        //Debug.Log((Position - defaultDestination[DDPivot][0]).magnitude == 0);
         if ((Position - defaultDestination[DDPivot][0]).magnitude == 0)
         {
             int RandomTransform = Random.Range(1, defaultDestination[DDPivot].Length);

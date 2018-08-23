@@ -38,7 +38,7 @@ public class MapManager {
 
         mapData = new eTileState[EachString.Length, EachString[0].Length - 1];
 
-        for (int i = 0; i < mapData.GetLength(0); i++)
+        for (int i = mapData.GetLength(0) - 1; i >= 0; i--)
         {
             for (int j = 0; j < mapData.GetLength(1); j++)
             {
@@ -56,148 +56,58 @@ public class MapManager {
         HEIGH = mapData.GetLength(0);
         WIDTH = mapData.GetLength(1);
 
-        for (int i = 0; i < mapData.GetLength(0); i++)
-        {
-            for (int j = 0; j < mapData.GetLength(1); j++)
-            {
-                GameObject TempShadow = Object.Instantiate(Shadow, ShadowParent);
-                TempShadow.transform.position = ConvertIndexsToPosition(j, i);
-                Shadows[i, j] = TempShadow;
-                TempShadow.SetActive(false);
-            }
-        }
-
-        rounding = new int[20][];
-        for (int i = 1; i <= 19; i++)
-        {
-            rounding[i] = new int[i + 1];
-            for (int j = 1; j <= i; j++)
-            {
-                rounding[i][j] = (int)Mathf.Min(j, Mathf.Round(i * Mathf.Cos(Mathf.Asin(j / (i + 0.5f)))));
-            }
-        }
         SetEnemyDefaultDestination();
     }
 
-    public static void ConvertPositionToIndexs(Vector2 Position, out int RowIndex, out int ColumnIndex)
-    {   
-        RowIndex = (int)((Mathf.Round((Position.x + 6.016f) * 1000)) / 1000 / 0.64f);
-        ColumnIndex = (int)((Mathf.Round((5.4f - Position.y) * 1000)) / 1000 / 0.64f);
+    private static void ConvertLocalToIndexs(ref int RowIndex, ref int ColumnIndex)
+    {
+        ColumnIndex = HEIGH - ColumnIndex;
     }
 
-    public static void ConvertPositionToIndexs(Vector2 Position, out Vector2 TargetPosition)
+    public static void ConvertPositionToIndexs(Vector2 Position, out int RowIndex, out int ColumnIndex)
+    {
+        RowIndex = (int)((Mathf.Round((Position.x + 6.016f) * 1000)) / 1000 / 0.64f);
+        ColumnIndex = (int)((Mathf.Round((4.12f + Position.y) * 1000)) / 1000 / 0.64f);
+    }
+
+    public static Vector2 ConvertWorldPositionToLocal(Vector2 Position)
     {
         int RowIndex = (int)((Mathf.Round((Position.x + 6.016f) * 1000)) / 1000 / 0.64f);
-        int ColumnIndex = (int)((Mathf.Round((5.4f - Position.y) * 1000)) / 1000 / 0.64f);
+        int ColumnIndex = (int)((Mathf.Round((Position.y + 4.12f) * 1000)) / 1000 / 0.64f);
 
-        TargetPosition = new Vector2(RowIndex, ColumnIndex);
+        Vector2 LocalPosition = new Vector2(RowIndex, ColumnIndex);
 
+        return LocalPosition;
     }
+
+    //public static void ConvertPositionToIndexsForDebug(Vector2 Position)
+    //{
+    //    int RowIndex = (int)((Mathf.Round((Position.x + 6.016f) * 1000)) / 1000 / 0.64f);
+    //    int ColumnIndex = (int)((Mathf.Round((4.12f + Position.y) * 1000)) / 1000 / 0.64f);
+    //    Debug.Log(RowIndex);
+    //    Debug.Log(ColumnIndex);
+    //}
+
     public static Vector2 ConvertIndexsToPosition(int Row, int Column)
     {
-        return new Vector2(-6.016f + Row * 0.64f, 5.4f - Column * 0.64f);
+        return new Vector2(-6.016f + Row * 0.64f, -4.12f + Column * 0.64f);
     }
 
-    public static void ShadowCast(Vector2 PlayerPosition,int Sight)
+    public static void ConvertIndexTo2D(int TargetIndex, out int RowIndex, out int ColumnIndex)
     {
-        bool[] FlagShadow = SetShadowFlag(PlayerPosition, Sight);
-
-        for (int i = 0; i < mapData.GetLength(0); i++)
-        {
-            for (int j = 0; j < mapData.GetLength(1); j++)
-            {
-                if (FlagShadow[i * WIDTH + j])
-                {
-                    Shadows[i, j].SetActive(false);
-                }
-                else
-                {
-                    Shadows[i, j].SetActive(true);
-                }
-            }
-        }
-    }
-
-    public static bool[] SetShadowFlag(Vector2 PlayerPosition ,int Distance)
-    {
-        int x, y;
-        ConvertPositionToIndexs(PlayerPosition, out x, out y);
-
-        distance = Distance;
-
-        limits = rounding[distance];
-
-        for (int i = 0; i < fieldOfView.Length; i++)
-        {
-            fieldOfView[i] = false;
-        }
-        fieldOfView[y * WIDTH + x] = true;
-
-        scanSector(x, y, +1, +1, 0, 0);
-        scanSector(x, y, -1, +1, 0, 0);
-        scanSector(x, y, +1, -1, 0, 0);
-        scanSector(x, y, -1, -1, 0, 0);
-        scanSector(x, y, 0, 0, +1, +1);
-        scanSector(x, y, 0, 0, -1, +1);
-        scanSector(x, y, 0, 0, +1, -1);
-        scanSector(x, y, 0, 0, -1, -1);
-
-        return fieldOfView;
-    }
-    private static void scanSector(int cx, int cy, int m1, int m2, int m3, int m4)
-    {
-        Obs.reset();
-        for (int p = 1; p <= distance; p++)
-        {
-            float dq2 = 0.5f / p;
-            int pp = limits[p];
-            for (int q = 0; q <= pp; q++)
-            {
-                int x = cx + q * m1 + p * m3;
-                int y = cy + p * m2 + q * m4;
-
-                if (y >= 0 && y < HEIGH && x >= 0 && x < WIDTH)
-                {
-
-                    float a0 = (float)q / p;
-                    float a1 = a0 - dq2;
-                    float a2 = a0 + dq2;
-
-                    int pos = y * WIDTH + x;
-
-                    if (Obs.isBlocked(a0) && Obs.isBlocked(a1) && Obs.isBlocked(a2))
-                    {
-                        // Do nothing					
-                    }
-                    else
-                    {
-                        fieldOfView[pos] = true;
-                    }
-
-                    if (mapData[y,x] == eTileState.Wall)
-                    {
-                        Obs.add(a1, a2);
-                    }
-                }
-            }
-            Obs.nextRow();
-        }
-    }
-    public static void ConvertIndexTo2D(int TargetIndex, out int ColumnIndex, out int RowIndex)
-    {
-        ColumnIndex = TargetIndex / WIDTH;
         RowIndex = TargetIndex % WIDTH;
+        ColumnIndex = TargetIndex / WIDTH;
     }
 
-    public static int ConvertIndexTo1D(int ColumnIndex, int RowIndex)
+    public static int ConvertIndexTo1D(int RowIndex, int ColumnIndex)
     {
         return ColumnIndex * WIDTH + RowIndex;
     }
 
     public static void SetTileState(Vector2 TargetPosition, eTileState TargetTileState)
     {
-        int ColumnIndex;
         int RowIndex;
+        int ColumnIndex;
         ConvertPositionToIndexs(TargetPosition, out RowIndex, out ColumnIndex);
         
         mapData[ColumnIndex, RowIndex] = TargetTileState;
@@ -219,40 +129,38 @@ public class MapManager {
 
     public static eTileState GetTileState(Vector2 TargetPosition)
     {
-        int ColumnIndex;
         int RowIndex;
-        
+        int ColumnIndex;
+
         ConvertPositionToIndexs(TargetPosition, out RowIndex, out ColumnIndex);
 
-        //Debug.Log(RowIndex + " " + ColumnIndex);
-        //Debug.Log(mapData[ColumnIndex, RowIndex]);
         return mapData[ColumnIndex, RowIndex];
     }
     
     public static eTileState GetTileState(int Index1D)
     {
-        int ColumnIndex;
         int RowIndex;
+        int ColumnIndex;
 
-        ConvertIndexTo2D(Index1D, out ColumnIndex, out RowIndex);
+        ConvertIndexTo2D(Index1D, out RowIndex, out ColumnIndex);
 
         return mapData[ColumnIndex, RowIndex];
     }
 
-    public static eTileState GetTileState(int ColumnIndex, int Rowindex)
-    {
-        return mapData[ColumnIndex, Rowindex];
+    public static eTileState GetTileState(int RowIndex, int ColumnIndex)
+    { 
+        return mapData[ColumnIndex, RowIndex];
     }
 
     private static void SetEnemyDefaultDestination()
     {
-        Vector2 DefaultPosition0 = new Vector2(3, 2);
+        Vector2 DefaultPosition0 = new Vector2(3, 12);
         Vector2 DefaultPosition1 = new Vector2(3, 7);
-        Vector2 DefaultPosition2 = new Vector2(3, 12);
+        Vector2 DefaultPosition2 = new Vector2(3, 2);
         Vector2 DefaultPosition3 = new Vector2(9, 7);
-        Vector2 DefaultPosition4 = new Vector2(16, 2);
+        Vector2 DefaultPosition4 = new Vector2(16, 12);
         Vector2 DefaultPosition5 = new Vector2(16, 7);
-        Vector2 DefaultPosition6 = new Vector2(16, 12);
+        Vector2 DefaultPosition6 = new Vector2(16, 2);
 
         enemyDefaultDestination = new Vector2[7][];
 
@@ -345,7 +253,3 @@ public class Obstacles
         limit = length;
     }
 }
-
-
-// 2018 - 08 - 17 픽셀던전 깃헙에서 배껴옴!! 어케돌아가는 로직인지도 모름!! 
-// 꼭 시간날때마다 공부해보자!!

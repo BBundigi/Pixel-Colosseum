@@ -6,9 +6,16 @@ public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance;
     // Use this for initialization
+    public Vector2 Position
+    {
+        get
+        {
+            return position;
+        }
+    }
     private int healthPoint, attackPoint;
 
-    private Vector2 Position;
+    private Vector2 position;
     private float attackRange;
 
     public int HealthPoint
@@ -70,14 +77,16 @@ public class PlayerManager : MonoBehaviour
         healthPoint = 100;
         attackPoint = 1000;
         attackRange = 0.25f;
-        //MapManager.ShadowCast(transform.position, 8);
+        ShadowCaster.ShadowCast(transform.position, 8);
     }
+
     public IEnumerator MovePosition(Vector3 TargetPosition)
     {
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, true);
+        ChangeDirection(TargetPosition);
+
         Vector3 MovePointPerSecond = (TargetPosition - transform.position) / 15;
         MapManager.SetTileState(transform.position, eTileState.BasicTile);
-        ChangeDirection(TargetPosition);
 
         while (transform.position != TargetPosition)
         {
@@ -86,8 +95,7 @@ public class PlayerManager : MonoBehaviour
         }
         transform.position = TargetPosition;
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, false);
-        //MapManager.ShadowCast(transform.position, 8);
-
+        ShadowCaster.ShadowCast(transform.position, 8);
         MapManager.SetTileState(transform.position, eTileState.Player);
         TurnManager.Instance.PlayerTurnEnd();
     }
@@ -99,10 +107,10 @@ public class PlayerManager : MonoBehaviour
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, true);
     }
 
-    private void ChangeDirection(Vector3 TargetVector3)
+    private void ChangeDirection(Vector2 TargetVector2)
     {
         transform.rotation = Quaternion.Euler(0, 
-            TargetVector3.x - transform.position.x < 0 ?
+            TargetVector2.x - transform.position.x < 0 ?
                                                 180 : 0,
                                               0);
     }
@@ -115,6 +123,6 @@ public class PlayerManager : MonoBehaviour
 
     public void SetPosition()
     {
-        MapManager.ConvertPositionToIndexs(transform.position, out Position);
+        position = MapManager.ConvertWorldPositionToLocal(transform.position);
     }
 }
