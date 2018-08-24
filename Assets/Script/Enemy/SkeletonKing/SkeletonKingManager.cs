@@ -11,5 +11,11 @@ public class SkeletonKingManager : EnemyClass {
         DDPivot = -1;
         defaultDestination = MapManager.EnemyDefaultDestination;
         SetPosition();
+        PlayerManager.Instance.setEnemyList(this);
+    }
+
+    private void OnDisable()
+    {
+        PlayerManager.Instance.setEnemyList(this);
     }
 }

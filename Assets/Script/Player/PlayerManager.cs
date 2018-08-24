@@ -5,6 +5,8 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance;
+
+    private List<EnemyClass> enemys;
     // Use this for initialization
     public Vector2 Position
     {
@@ -62,6 +64,7 @@ public class PlayerManager : MonoBehaviour
     {
         if (Instance == null)
         {
+            enemys = new List<EnemyClass>();
             Instance = this;
         }
         else
@@ -77,34 +80,50 @@ public class PlayerManager : MonoBehaviour
         healthPoint = 100;
         attackPoint = 1000;
         attackRange = 0.25f;
-        ShadowCaster.ShadowCast(transform.position, 8);
+        SetPosition();
     }
 
-    public IEnumerator MovePosition(Vector3 TargetPosition)
+    public IEnumerator MovePosition(Vector2 TargetPosition)
     {
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, true);
         ChangeDirection(TargetPosition);
 
-        Vector3 MovePointPerSecond = (TargetPosition - transform.position) / 15;
+        Vector3 MovePointPerSecond = ((Vector3)TargetPosition - transform.position) / 15;
         MapManager.SetTileState(transform.position, eTileState.BasicTile);
-
-        while (transform.position != TargetPosition)
+        RemoveMovalbeTile();
+        while (transform.position != (Vector3)TargetPosition)
         {
             transform.position += MovePointPerSecond;
             yield return null;
         }
-        transform.position = TargetPosition;
+
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, false);
-        ShadowCaster.ShadowCast(transform.position, 8);
-        MapManager.SetTileState(transform.position, eTileState.Player);
+        SetPosition();
         TurnManager.Instance.PlayerTurnEnd();
     }
 
-    public void PlayerAttack(EnemyClass Target)
+    public void PlayerAttack(int EnemyPositionX, int EnemyPositionY)
     {
+        EnemyClass Target = Findenemy(EnemyPositionX, EnemyPositionY);
         ChangeDirection(Target.transform.position);
         Target.Hp -= AttackPoint;
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, true);
+    }
+
+
+
+    public void EndPlayerAttack()
+    {
+        Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, false);
+        TurnManager.Instance.PlayerTurnEnd();
+    }
+
+    private void SetPosition()
+    {
+        position = MapManager.ConvertWorldPositionToLocal(transform.position);
+        MapManager.SetTileState(transform.position, eTileState.Player);
+        ShadowCaster.ShadowCast(transform.position, 8);
+        SetMovableTile();
     }
 
     private void ChangeDirection(Vector2 TargetVector2)
@@ -115,14 +134,61 @@ public class PlayerManager : MonoBehaviour
                                               0);
     }
 
-    public void EndPlayerAttack()
+    public void  setEnemyList(EnemyClass TargetEnemy)
     {
-        Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, false);
-        TurnManager.Instance.PlayerTurnEnd();
+        for(int i =0; i < enemys.Count; i++)
+        {
+            if(enemys[i].Equals(TargetEnemy))
+            {
+                enemys.Remove(TargetEnemy);
+                return;
+            }
+        }
+        enemys.Add(TargetEnemy);
     }
 
-    public void SetPosition()
+    private void SetMovableTile()
     {
-        position = MapManager.ConvertWorldPositionToLocal(transform.position);
+        for(int i = -1; i < 2; i++)
+        {
+            for(int j = -1; j< 2; j++)
+            {
+                int targetX = (int)Position.x + i;
+                int targetY = (int)Position.y + j;
+                if (MapManager.GetTileState(targetX,targetY) == eTileState.BasicTile)
+                {
+                    MapManager.SetTileState(targetX, targetY, eTileState.Movable);
+                }
+            }
+        }
+    }
+
+    private void RemoveMovalbeTile()
+    {
+        for (int i = -1; i < 2; i++)
+        {
+            for (int j = -1; j < 2; j++)
+            {
+                int targetX = (int)Position.x + i;
+                int targetY = (int)Position.y + j;
+                if (MapManager.GetTileState(targetX, targetY) == eTileState.Movable)
+                {
+                    MapManager.SetTileState(targetX, targetY, eTileState.BasicTile);
+                }
+            }
+        }
+    }
+    
+    private EnemyClass Findenemy(int EnemyPositionX,int EnemyPositionY)
+    {
+        for (int i = 0; i < enemys.Count; i++)
+        {
+            if (enemys[i].Position.x == EnemyPositionX && enemys[i].Position.y == EnemyPositionY)
+            {
+                return enemys[i];
+            }
+        }
+        Debug.Log("PlayerAttackError!!");
+        return null;
     }
 }

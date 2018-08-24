@@ -6,6 +6,7 @@ public enum eTileState
 {
     Shadow,
     BasicTile,
+    Movable,
     Wall,
     Player,
     Enemy
@@ -31,7 +32,6 @@ public static class MapManager {
     }
 
     static MapManager() {
-
         string StringMapData = MapDataText.ToString();
 
         string[] EachString = StringMapData.Split('\n');
@@ -67,7 +67,7 @@ public static class MapManager {
     public static void ConvertPositionToIndexs(Vector2 Position, out int RowIndex, out int ColumnIndex)
     {
         RowIndex = (int)((Mathf.Round((Position.x + 6.016f) * 1000)) / 1000 / 0.64f);
-        ColumnIndex = (int)((Mathf.Round((4.12f + Position.y) * 1000)) / 1000 / 0.64f);
+        ColumnIndex = (int)((Mathf.Round((Position.y + 4.12f) * 1000)) / 1000 / 0.64f);
     }
 
     public static Vector2 ConvertWorldPositionToLocal(Vector2 Position)
@@ -150,6 +150,21 @@ public static class MapManager {
     public static eTileState GetTileState(int RowIndex, int ColumnIndex)
     { 
         return mapData[ColumnIndex, RowIndex];
+    }
+
+    public static bool CheckTileState(int Distance, eTileState TargetTileState, int RowIndex, int ColumnIndex)
+    {
+        for (int i = -Distance; i < Distance + 1; i++)
+        {
+            for (int j = -Distance; j < Distance + 1; j++)
+            {
+                if (mapData[RowIndex + i, RowIndex + j] == TargetTileState)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static void SetEnemyDefaultDestination()
