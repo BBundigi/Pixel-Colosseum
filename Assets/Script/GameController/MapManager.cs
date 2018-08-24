@@ -12,7 +12,7 @@ public enum eTileState
 }
 
 
-public class MapManager {
+public static class MapManager {
     private static TextAsset MapDataText = Resources.Load<TextAsset>("MapDataText/MapDataText_Cave");
 
     private static eTileState[,] mapData;
@@ -30,7 +30,7 @@ public class MapManager {
         }
     }
 
-    static MapManager() { 
+    static MapManager() {
 
         string StringMapData = MapDataText.ToString();
 

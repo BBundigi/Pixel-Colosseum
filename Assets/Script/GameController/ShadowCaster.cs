@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class ShadowCaster {
+public static class ShadowCaster {
     private static GameObject Shadow = Resources.Load<GameObject>("Prefab/shadow");
     private static GameObject[,] Shadows;
     private static int distance;
@@ -11,13 +11,11 @@ public class ShadowCaster {
     private static int HEIGH;
     private static int WIDTH;
 
-    private int SightDistance;
-
     private static Obstacles Obs = new Obstacles();
 
 
     private static Transform ShadowParent;
-    public static void SetShadowCaster()
+     static ShadowCaster ()
     {
         HEIGH = MapManager.HEIGH;
         WIDTH = MapManager.WIDTH;
