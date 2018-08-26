@@ -18,6 +18,8 @@ public static class MapManager {
 
     private static eTileState[,] mapData;
 
+    public static Object[] MapObjects;
+
     public static int WIDTH;
     public static int HEIGH;
 
@@ -37,6 +39,7 @@ public static class MapManager {
         string[] EachString = StringMapData.Split('\n');
 
         mapData = new eTileState[EachString.Length, EachString[0].Length - 1];
+        MapObjects = new Object[mapData.Length];
 
         for (int i = mapData.GetLength(0) - 1; i >= 0; i--)
         {
@@ -80,14 +83,6 @@ public static class MapManager {
         return LocalPosition;
     }
 
-    //public static void ConvertPositionToIndexsForDebug(Vector2 Position)
-    //{
-    //    int RowIndex = (int)((Mathf.Round((Position.x + 6.016f) * 1000)) / 1000 / 0.64f);
-    //    int ColumnIndex = (int)((Mathf.Round((4.12f + Position.y) * 1000)) / 1000 / 0.64f);
-    //    Debug.Log(RowIndex);
-    //    Debug.Log(ColumnIndex);
-    //}
-
     public static Vector2 ConvertIndexsToPosition(int Row, int Column)
     {
         return new Vector2(-6.016f + Row * 0.64f, -4.12f + Column * 0.64f);
@@ -113,7 +108,7 @@ public static class MapManager {
         mapData[ColumnIndex, RowIndex] = TargetTileState;
     }
 
-    public static void SetTileState(int ColumnIndex, int RowIndex, eTileState TargetTileState)
+    public static void SetTileState(int RowIndex, int ColumnIndex , eTileState TargetTileState)
     {
         mapData[ColumnIndex, RowIndex] = TargetTileState;
     }
@@ -122,9 +117,22 @@ public static class MapManager {
     {
         int ColumnIndex;
         int RowIndex;
-        ConvertIndexTo2D(Index1D, out ColumnIndex, out RowIndex);
+        ConvertIndexTo2D(Index1D, out RowIndex, out ColumnIndex);
 
         mapData[ColumnIndex, RowIndex] = TargetTileState;
+    }
+
+    public static void SetMapObjects(int RowIndex, int ColumnIndex, Object TargetObject)
+    {
+        int index = ConvertIndexTo1D(RowIndex, ColumnIndex);
+        MapObjects[index] = TargetObject;
+    }
+
+    public static Object GetMapObjects(int RowIndex, int ColumnIndex)
+    {
+        int index = ConvertIndexTo1D(RowIndex, ColumnIndex);
+
+        return MapObjects[index];
     }
 
     public static eTileState GetTileState(Vector2 TargetPosition)
@@ -158,7 +166,7 @@ public static class MapManager {
         {
             for (int j = -Distance; j < Distance + 1; j++)
             {
-                if (mapData[RowIndex + i, RowIndex + j] == TargetTileState)
+                if (mapData[RowIndex + i, RowIndex + j] == TargetTileState && i > 0 && i< HEIGH && j >0 && j < WIDTH)
                 {
                     return true;
                 }

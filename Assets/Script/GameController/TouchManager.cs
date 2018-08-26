@@ -8,13 +8,12 @@ public class TouchManager : MonoBehaviour
 
     private Collider2D[] TouchDetectors;
 
-    private  Vector2 StartPos;
+    private Vector2 StartPos;
 
-    private  bool isMoved;
+    private bool isDrag;
 
     private float ZoomSpeed;
     private float CameraMoveSpeed;
-    private Transform CameraPosition; 
 
     void Awake()
     {
@@ -31,11 +30,10 @@ public class TouchManager : MonoBehaviour
         }
     }
     void Start()
-    { 
+    {
         TouchDetectors = GameObject.FindWithTag("Player").GetComponentsInChildren<BoxCollider2D>();
         ZoomSpeed = 1;
-        CameraMoveSpeed = 1;
-        CameraPosition = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Transform>();
+        CameraMoveSpeed = 0.1f;
     }
     void OnEnable()
     {
@@ -52,19 +50,21 @@ public class TouchManager : MonoBehaviour
         if (Input.touchCount == 1)
         {
             Touch touch = Input.GetTouch(0);
+            isDrag = false;
 
             switch (touch.phase)
             {
                 case TouchPhase.Moved:
                     {
+                        isDrag= true;
                         Vector2 deltaTouchPos = touch.deltaPosition;
-                        isMoved = false;
-                        CameraPosition.position = deltaTouchPos * CameraMoveSpeed;
+                        
+                        Camera.main.transform.position += (Vector3)deltaTouchPos * CameraMoveSpeed;
                         break;
                     }
                 case TouchPhase.Ended:
                     {
-                        if (!isMoved)
+                        if (!isDrag)
                         {
                             Vector2 WorldPosition = Camera.main.ScreenToWorldPoint(touch.position);
 
@@ -72,7 +72,9 @@ public class TouchManager : MonoBehaviour
                             int y;
                             ConvertTouchPositionToIndexs(WorldPosition, out x, out y);
 
-                            switch(MapManager.GetTileState(x,y))
+                            if(x < 0 || y< 0 || x > MapManager.WIDTH || y > MapManager.HEIGH)
+
+                            switch (MapManager.GetTileState(x, y))
                             {
                                 case eTileState.Movable:
                                     {
@@ -81,7 +83,6 @@ public class TouchManager : MonoBehaviour
                                     }
                                 case eTileState.Enemy:
                                     {
-                                        //PlayerManager.Instance.PlayerAttack();//How to?
                                         break;
                                     }
                                 default:
@@ -110,13 +111,59 @@ public class TouchManager : MonoBehaviour
 
             if (Camera.main.orthographic)
             {
-                Camera.main.orthographicSize += deltaTouchesMag * ZoomSpeed;  
+                Camera.main.orthographicSize += deltaTouchesMag * ZoomSpeed;
             }
         }
     }
-    private void ConvertTouchPositionToIndexs(Vector2 TargetVector, out int x, out int y)
+
+    private void OnGUI()
     {
-         x = (int)((TargetVector.x + 6.016 + 0.32) / 0.64);
-         y = (int)((TargetVector.x + 4.12 + 0.32) / 0.64);
+        Event m_Event = Event.current;
+
+        if (m_Event.type == EventType.MouseDrag)
+        {
+            isDrag = true;
+            Vector2 deltaMousePos = m_Event.delta;
+
+            Camera.main.transform.position -= (Vector3)deltaMousePos * CameraMoveSpeed;
+
+        }
+
+        if (m_Event.type == EventType.MouseUp)
+        {
+            if (!isDrag)
+            {
+                Vector2 WorldPosition = Camera.main.ScreenToWorldPoint(m_Event.mousePosition);
+
+                int x;
+                int y;
+                ConvertTouchPositionToIndexs(WorldPosition, out x, out y);
+
+                switch (MapManager.GetTileState(x, y))
+                {
+                    case eTileState.Movable:
+                        {
+                            PlayerManager.Instance.MovePosition(MapManager.ConvertIndexsToPosition(x, y));
+                            break;
+                        }
+                    case eTileState.Enemy:
+                        {
+                            break;
+                        }
+                    default:
+                        {
+                            break;
+                        }
+                }
+            }
+            isDrag = false;
+        }
     }
+        private void ConvertTouchPositionToIndexs(Vector2 TargetVector, out int x, out int y)
+        {
+
+            x = (int)((TargetVector.x + 6.016 + 0.32) / 0.64);
+            y = (int)((TargetVector.x + 4.12 + 0.32) / 0.64);
+            Debug.Log(x + " " + y);
+        }
 }

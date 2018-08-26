@@ -61,10 +61,31 @@ public abstract class EnemyClass : MonoBehaviour
             attackRange = value;
         }
     }
+
+    protected virtual void Start()
+    {
+        Debug.Log("hi");
+        Hp = 100;
+        AttackPoint = 10;
+        AttackRange = 0.92f;
+        DDPivot = -1;
+        defaultDestination = MapManager.EnemyDefaultDestination;
+        SetPosition();
+    }
     public void SetPosition()
     {
         position = MapManager.ConvertWorldPositionToLocal(transform.position);
+        MapManager.SetTileState((int)position.x, (int)position.y, eTileState.Enemy);
+        MapManager.SetMapObjects((int)position.x, (int)position.y, this);
     }
+
+    public void RemovePositionData()
+    {
+        MapManager.SetTileState((int)position.x, (int)position.y, eTileState.BasicTile);
+        MapManager.SetMapObjects((int)position.x, (int)position.y, null);
+    }
+
+
 
     public Vector2 FindMovePosition()
     {

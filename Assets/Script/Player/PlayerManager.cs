@@ -6,8 +6,6 @@ public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance;
 
-    private List<EnemyClass> enemys;
-    // Use this for initialization
     public Vector2 Position
     {
         get
@@ -64,7 +62,6 @@ public class PlayerManager : MonoBehaviour
     {
         if (Instance == null)
         {
-            enemys = new List<EnemyClass>();
             Instance = this;
         }
         else
@@ -102,15 +99,12 @@ public class PlayerManager : MonoBehaviour
         TurnManager.Instance.PlayerTurnEnd();
     }
 
-    public void PlayerAttack(int EnemyPositionX, int EnemyPositionY)
+    public void PlayerAttack(int EnemyPositionX, int EnemyPositionY, EnemyClass Target)
     {
-        EnemyClass Target = Findenemy(EnemyPositionX, EnemyPositionY);
         ChangeDirection(Target.transform.position);
         Target.Hp -= AttackPoint;
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, true);
     }
-
-
 
     public void EndPlayerAttack()
     {
@@ -132,19 +126,6 @@ public class PlayerManager : MonoBehaviour
             TargetVector2.x - transform.position.x < 0 ?
                                                 180 : 0,
                                               0);
-    }
-
-    public void  setEnemyList(EnemyClass TargetEnemy)
-    {
-        for(int i =0; i < enemys.Count; i++)
-        {
-            if(enemys[i].Equals(TargetEnemy))
-            {
-                enemys.Remove(TargetEnemy);
-                return;
-            }
-        }
-        enemys.Add(TargetEnemy);
     }
 
     private void SetMovableTile()
@@ -177,18 +158,5 @@ public class PlayerManager : MonoBehaviour
                 }
             }
         }
-    }
-    
-    private EnemyClass Findenemy(int EnemyPositionX,int EnemyPositionY)
-    {
-        for (int i = 0; i < enemys.Count; i++)
-        {
-            if (enemys[i].Position.x == EnemyPositionX && enemys[i].Position.y == EnemyPositionY)
-            {
-                return enemys[i];
-            }
-        }
-        Debug.Log("PlayerAttackError!!");
-        return null;
     }
 }

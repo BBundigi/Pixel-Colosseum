@@ -37,9 +37,8 @@ abstract public class EnemyStateMachine : MonoBehaviour {
         AttachedEnemy.Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, true);
 
         Vector3 TargetPosition = AttachedEnemy.FindMovePosition();
-        AttachedEnemy.ChangeDirection(TargetPosition);
         Vector3 MovePointPerSecond = (TargetPosition - transform.position) / 15;
-        
+        AttachedEnemy.ChangeDirection(TargetPosition);
 
         while (transform.position != TargetPosition)
         {
@@ -48,7 +47,6 @@ abstract public class EnemyStateMachine : MonoBehaviour {
         }
 
         AttachedEnemy.SetPosition();
-        MapManager.SetTileState(transform.position, eTileState.Enemy);
         TurnManager.Instance.EnemyTurnEnd();
         AttachedEnemy.Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, false);
     }
