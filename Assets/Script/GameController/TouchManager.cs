@@ -47,8 +47,13 @@ public class TouchManager : MonoBehaviour
     }
     void Update()
     {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector2 TargetVector = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        } 
         if (Input.touchCount == 1)
         {
+
             Touch touch = Input.GetTouch(0);
             isDrag = false;
 
@@ -56,9 +61,9 @@ public class TouchManager : MonoBehaviour
             {
                 case TouchPhase.Moved:
                     {
-                        isDrag= true;
+                        isDrag = true;
                         Vector2 deltaTouchPos = touch.deltaPosition;
-                        
+
                         Camera.main.transform.position += (Vector3)deltaTouchPos * CameraMoveSpeed;
                         break;
                     }
@@ -72,23 +77,24 @@ public class TouchManager : MonoBehaviour
                             int y;
                             ConvertTouchPositionToIndexs(WorldPosition, out x, out y);
 
-                            if(x < 0 || y< 0 || x > MapManager.WIDTH || y > MapManager.HEIGH)
-
-                            switch (MapManager.GetTileState(x, y))
+                            if (x > 0 || y > 0 || x < MapManager.WIDTH || y < MapManager.HEIGH)
                             {
-                                case eTileState.Movable:
-                                    {
-                                        PlayerManager.Instance.MovePosition(MapManager.ConvertIndexsToPosition(x, y));
-                                        break;
-                                    }
-                                case eTileState.Enemy:
-                                    {
-                                        break;
-                                    }
-                                default:
-                                    {
-                                        break;
-                                    }
+                                switch (MapManager.GetTileState(x, y))
+                                {
+                                    case eTileState.Movable:
+                                        {
+                                            PlayerManager.Instance.MovePosition(MapManager.ConvertIndexsToPosition(x, y));
+                                            break;
+                                        }
+                                    case eTileState.Enemy:
+                                        {
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            break;
+                                        }
+                                }
                             }
                         }
                         break;
@@ -133,37 +139,41 @@ public class TouchManager : MonoBehaviour
         {
             if (!isDrag)
             {
-                Vector2 WorldPosition = Camera.main.ScreenToWorldPoint(m_Event.mousePosition);
-
+                Vector2 WorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 int x;
                 int y;
                 ConvertTouchPositionToIndexs(WorldPosition, out x, out y);
-
-                switch (MapManager.GetTileState(x, y))
+                if (x > 0 || y > 0 || x < MapManager.WIDTH || y < MapManager.HEIGH)           
                 {
-                    case eTileState.Movable:
-                        {
-                            PlayerManager.Instance.MovePosition(MapManager.ConvertIndexsToPosition(x, y));
-                            break;
-                        }
-                    case eTileState.Enemy:
-                        {
-                            break;
-                        }
-                    default:
-                        {
-                            break;
-                        }
+                    switch (MapManager.GetTileState(x, y))
+                    {
+                        case eTileState.Movable:
+                            {
+                                StartCoroutine(PlayerManager.Instance.MovePosition(MapManager.ConvertIndexsToPosition(x, y)));
+                                break;
+                            }
+                        case eTileState.Enemy:
+                            {
+                                PlayerManager.Instance.PlayerAttack((EnemyClass)MapManager.GetMapObjects(x, y));
+                                break;
+                            }
+                        default:
+                            {
+                                break;
+                            }
+                    }
                 }
             }
             isDrag = false;
         }
     }
-        private void ConvertTouchPositionToIndexs(Vector2 TargetVector, out int x, out int y)
-        {
-
-            x = (int)((TargetVector.x + 6.016 + 0.32) / 0.64);
-            y = (int)((TargetVector.x + 4.12 + 0.32) / 0.64);
-            Debug.Log(x + " " + y);
-        }
+    private void ConvertTouchPositionToIndexs(Vector2 TargetVector, out int x, out int y)
+    {
+        x = (int)((TargetVector.x + 6.016f + .32f) / .64f);
+        y = (int)((TargetVector.y + 4.12f + .32f) / .64f);
+    }
 }
+
+//이유는 모르겠는데 Event.mousePosition이 잘 작동을 안함
+
+//알아보기

@@ -64,7 +64,6 @@ public abstract class EnemyClass : MonoBehaviour
 
     protected virtual void Start()
     {
-        Debug.Log("hi");
         Hp = 100;
         AttackPoint = 10;
         AttackRange = 0.92f;
@@ -84,8 +83,6 @@ public abstract class EnemyClass : MonoBehaviour
         MapManager.SetTileState((int)position.x, (int)position.y, eTileState.BasicTile);
         MapManager.SetMapObjects((int)position.x, (int)position.y, null);
     }
-
-
 
     public Vector2 FindMovePosition()
     {
@@ -291,5 +288,9 @@ public abstract class EnemyClass : MonoBehaviour
             }
             //Debug.Log(DDPivot);
         }
+    }
+    private void OnDisable()
+    {
+        MapManager.SetTileState((int)position.x, (int)position.y, eTileState.BasicTile);
     }
 }

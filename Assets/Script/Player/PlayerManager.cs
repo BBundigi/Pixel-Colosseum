@@ -99,7 +99,7 @@ public class PlayerManager : MonoBehaviour
         TurnManager.Instance.PlayerTurnEnd();
     }
 
-    public void PlayerAttack(int EnemyPositionX, int EnemyPositionY, EnemyClass Target)
+    public void PlayerAttack(EnemyClass Target)
     {
         ChangeDirection(Target.transform.position);
         Target.Hp -= AttackPoint;
@@ -109,6 +109,7 @@ public class PlayerManager : MonoBehaviour
     public void EndPlayerAttack()
     {
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, false);
+        SetMovableTile();
         TurnManager.Instance.PlayerTurnEnd();
     }
 

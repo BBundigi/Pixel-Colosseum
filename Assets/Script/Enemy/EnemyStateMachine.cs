@@ -39,6 +39,7 @@ abstract public class EnemyStateMachine : MonoBehaviour {
         Vector3 TargetPosition = AttachedEnemy.FindMovePosition();
         Vector3 MovePointPerSecond = (TargetPosition - transform.position) / 15;
         AttachedEnemy.ChangeDirection(TargetPosition);
+        AttachedEnemy.RemovePositionData();
 
         while (transform.position != TargetPosition)
         {

@@ -166,9 +166,12 @@ public static class MapManager {
         {
             for (int j = -Distance; j < Distance + 1; j++)
             {
-                if (mapData[RowIndex + i, RowIndex + j] == TargetTileState && i > 0 && i< HEIGH && j >0 && j < WIDTH)
+                if (ColumnIndex + i > 0 && ColumnIndex + i < HEIGH && RowIndex + j > 0 && RowIndex + j < WIDTH)
                 {
-                    return true;
+                    if(mapData[ColumnIndex + i, RowIndex + j] == TargetTileState)
+                    {
+                        return true;
+                    }
                 }
             }
         }
@@ -226,53 +229,5 @@ public static class MapManager {
 
         enemyDefaultDestination[6][0] = DefaultPosition6;
         enemyDefaultDestination[6][1] = DefaultPosition5;
-    }
-}
-
-public class Obstacles
-{
-    private static int SIZE = 8 * 8 / 2;
-    private float[] a1 = new float[SIZE];
-    private float[] a2 = new float[SIZE];
-
-    private int length;
-    private int limit;
-
-    public  void reset()
-    {
-        length = 0;
-        limit = 0;
-    }
-
-    public  void add(float o1, float o2)
-    {
-
-        if (length > limit && o1 <= a2[length - 1])
-        {
-            // Merging several blocking cells
-            a2[length - 1] = o2;
-        }
-        else
-        {
-            a1[length] = o1;
-            a2[length++] = o2;
-        }
-    }
-
-    public  bool isBlocked(float a)
-    {
-        for (int i = 0; i < limit; i++)
-        {
-            if (a >= a1[i] && a <= a2[i])
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public  void nextRow()
-    {
-        limit = length;
     }
 }
