@@ -4,16 +4,28 @@ using UnityEngine;
 
 public abstract class EnemyClass : MonoBehaviour
 {
-    public Vector2 Position
+    private int hp;
+    private int attackPoint;
+
+    private int xPos, yPos;
+
+    public int EnemyXPos
     {
         get
         {
-            return position;
+            return xPos;
         }
     }
-    private int hp;
-    private int attackPoint;
-    private Vector2 position;
+
+    public int EnemyYPos
+    {
+        get
+        {
+            return yPos;
+        }
+    }
+
+
     private float attackRange;
 
     protected Vector2[][] defaultDestination;
@@ -69,155 +81,150 @@ public abstract class EnemyClass : MonoBehaviour
         AttackRange = 0.92f;
         DDPivot = -1;
         defaultDestination = MapManager.EnemyDefaultDestination;
-        SetPosition();
-    }
-    public void SetPosition()
-    {
-        position = MapManager.ConvertWorldPositionToLocal(transform.position);
-        MapManager.SetTileState((int)position.x, (int)position.y, eTileState.Enemy);
-        MapManager.SetMapObjects((int)position.x, (int)position.y, this);
-    }
 
-    public void RemovePositionData()
-    {
-        MapManager.SetTileState((int)position.x, (int)position.y, eTileState.BasicTile);
-        MapManager.SetMapObjects((int)position.x, (int)position.y, null);
+        int rowIndex, columnIndex;
+        MapManager.ConvertPositionToIndexs(transform.position,out rowIndex, out columnIndex);
+
+        xPos = rowIndex;
+        yPos = columnIndex;
     }
 
-    public Vector2 FindMovePosition()
+    protected virtual void OnDisable()
     {
-        Vector2 Destination = FindPlayer();
+        RemovePositionData();
+    }
 
-        if (Destination.x == -1)
+    public int[] FindMovePosition()
+    {
+        int[] Destination = FindPlayer();
+
+        int[] returnPositions = new int[2] { xPos, yPos };
+
+        if (Destination[0] == -1)
         {
             if (DDPivot == -1)
             {
                 SetDDPivot();
             }
             UpdateTransformPivot();
-            Destination = defaultDestination[DDPivot][0];
+            Destination[0] = (int)defaultDestination[DDPivot][0].x;
+            Destination[1] = (int)defaultDestination[DDPivot][0].y;
         }
-        Destination -= Position;
+        Destination[0] -= xPos;
+        Destination[1] -= yPos;
 
-        if (Destination.x == 0)
+        if (Destination[0] == 0)
         {
-            if (Destination.y > 0)
+            if (Destination[1] > 0)
             {
-                return MapManager.ConvertIndexsToPosition((int)Position.x, (int)Position.y + 1);
+                returnPositions[0] = xPos;
+                returnPositions[1] = yPos + 1;
             }
             else
             {
-                return MapManager.ConvertIndexsToPosition((int)Position.x, (int)Position.y - 1);
+                returnPositions[0] = xPos;
+                returnPositions[1] = yPos - 1;
             }
         }
-        else if (Destination.y == 0)
+        else if (Destination[1] == 0)
         {
-            if (Destination.x > 0)
+            if (Destination[0] > 0)
             {
-                return MapManager.ConvertIndexsToPosition((int)Position.x + 1, (int)Position.y);
+                returnPositions[0] = xPos + 1;
+                returnPositions[1] = yPos;
             }
             else
             {
-                return MapManager.ConvertIndexsToPosition((int)Position.x - 1, (int)Position.y);
+                returnPositions[0] = xPos - 1;
+                returnPositions[1] = yPos;
             }
         }
-        else if (Destination.x > 0 && Destination.y > 0)
+        else if (Destination[0] > 0 && Destination[1] > 0)
         {
-            Vector2 ReturnPosition = Position + new Vector2(1, 1);
-            if (MapManager.GetTileState((int)ReturnPosition.x, (int)ReturnPosition.y) == eTileState.Wall)
+            returnPositions[0] = xPos + 1;
+            returnPositions[1] = yPos + 1;
+            if (MapManager.GetTileState(returnPositions[0], returnPositions[1]) == eTileState.Wall)
             {
-                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y - 1);
-                Vector2 yTempVector2 = new Vector2(ReturnPosition.x - 1, ReturnPosition.y);
-                if (MapManager.GetTileState((int)xTempVector2.x, (int)xTempVector2.y) != eTileState.Wall)
+                if (MapManager.GetTileState(xPos + 1, yPos) != eTileState.Wall)
                 {
-                    return MapManager.ConvertIndexsToPosition((int)xTempVector2.x, (int)xTempVector2.y);
+                    returnPositions[0] = xPos + 1;
+                    returnPositions[1] = yPos;
                 }
                 else
                 {
-                    return MapManager.ConvertIndexsToPosition((int)xTempVector2.x, (int)yTempVector2.y);
+                    returnPositions[0] = xPos;
+                    returnPositions[1] = yPos + 1;
                 }
             }
-            else
-            {
-                return MapManager.ConvertIndexsToPosition((int)ReturnPosition.x, (int)ReturnPosition.y);
-            }
         }
-        else if (Destination.x > 0 && Destination.y < 0)
+        else if (Destination[0] > 0 && Destination[1] < 0)
         {
-            Vector2 ReturnPosition = Position + new Vector2(1, -1);
-            if (MapManager.GetTileState((int)ReturnPosition.x, (int)ReturnPosition.y) == eTileState.Wall)
+            returnPositions[0] = xPos + 1;
+            returnPositions[1] = yPos - 1;
+            if (MapManager.GetTileState(returnPositions[0], returnPositions[1]) == eTileState.Wall)
             {
-                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y + 1);
-                Vector2 yTempVector2 = new Vector2(ReturnPosition.x - 1, ReturnPosition.y);
-                if (MapManager.GetTileState((int)xTempVector2.x, (int)xTempVector2.y) != eTileState.Wall)
+                if (MapManager.GetTileState(xPos + 1, yPos) != eTileState.Wall)
                 {
-                    return MapManager.ConvertIndexsToPosition((int)xTempVector2.x, (int)xTempVector2.y);
+                    returnPositions[0] = xPos + 1;
+                    returnPositions[1] = yPos;
                 }
                 else
                 {
-                    return MapManager.ConvertIndexsToPosition((int)yTempVector2.x, (int)yTempVector2.y);
+                    returnPositions[0] = xPos;
+                    returnPositions[1] = yPos - 1;
                 }
             }
-            else
+        }
+        else if (Destination[0] < 0 && Destination[1] > 0)
+        {
+            returnPositions[0] = xPos - 1;
+            returnPositions[1] = yPos + 1;
+            if (MapManager.GetTileState(returnPositions[0], returnPositions[1]) == eTileState.Wall)
             {
-                return MapManager.ConvertIndexsToPosition((int)ReturnPosition.x, (int)ReturnPosition.y);
+                if (MapManager.GetTileState(xPos - 1, yPos) != eTileState.Wall)
+                {
+                    returnPositions[0] = xPos - 1;
+                    returnPositions[1] = yPos;
+                }
+                else
+                {
+                    returnPositions[0] = xPos;
+                    returnPositions[1] = yPos + 1;
+                }
             }
         }
+        else if (Destination[0] < 0 && Destination[1] < 0)
+        {
+            returnPositions[0] = xPos - 1;
+            returnPositions[1] = yPos - 1;
+            if (MapManager.GetTileState(returnPositions[0], returnPositions[1]) == eTileState.Wall)
+            {
+                if (MapManager.GetTileState(xPos - 1, yPos) != eTileState.Wall)
+                {
+                    returnPositions[0] = xPos - 1;
+                    returnPositions[1] = yPos;
+                }
+                else
+                {
+                    returnPositions[0] = xPos;
+                    returnPositions[1] = yPos - 1;
+                }
+            }
+        }
+        RemovePositionData();
+        ChangeDirection(returnPositions[0]);
+        SetPositionData(returnPositions[0], returnPositions[1]);
+        
 
-        else if (Destination.x < 0 && Destination.y > 0)
-        {
-            Vector2 ReturnPosition = Position + new Vector2(-1, 1);
-            if (MapManager.GetTileState((int)ReturnPosition.x, (int)ReturnPosition.y) == eTileState.Wall)
-            {
-                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y - 1);
-                Vector2 yTempVector2 = new Vector2(ReturnPosition.x + 1, ReturnPosition.y);
-                if (MapManager.GetTileState((int)xTempVector2.x, (int)xTempVector2.y) != eTileState.Wall)
-                {
-                    return MapManager.ConvertIndexsToPosition((int)xTempVector2.x, (int)xTempVector2.y);
-                }
-                else
-                {
-                    return MapManager.ConvertIndexsToPosition((int)yTempVector2.x, (int)yTempVector2.y);
-                }
-            }
-            else
-            {
-                return MapManager.ConvertIndexsToPosition((int)ReturnPosition.x, (int)ReturnPosition.y);
-            }
-        }
-        else if (Destination.x < 0 && Destination.y < 0)
-        {
-            Vector2 ReturnPosition = Position + new Vector2(-1, -1);
-            if (MapManager.GetTileState((int)ReturnPosition.x, (int)ReturnPosition.y) == eTileState.Wall)
-            {
-                Vector2 xTempVector2 = new Vector2(ReturnPosition.x, ReturnPosition.y + 1);
-                Vector2 yTempVector2 = new Vector2(ReturnPosition.x + 1, ReturnPosition.y);
-                if (MapManager.GetTileState((int)xTempVector2.x, (int)xTempVector2.y) != eTileState.Wall)
-                {
-                    return MapManager.ConvertIndexsToPosition((int)xTempVector2.x, (int)xTempVector2.y);
-                }
-                else
-                {
-                    return MapManager.ConvertIndexsToPosition((int)yTempVector2.x, (int)yTempVector2.y);
-                }
-            }
-            else
-            {
-                return MapManager.ConvertIndexsToPosition((int)ReturnPosition.x, (int)ReturnPosition.y);
-            }
-        }
-
-        return transform.position;
+        return returnPositions;
     }
 
-    public void ChangeDirection(Vector2 TargetDirection)
+    public void EnemyAttack()
     {
-        transform.rotation = Quaternion.Euler(0,
-            TargetDirection.x - Position.x > 0 ? 0 : 180,
-                                               0);
+        PlayerManager.Instance.HealthPoint -= AttackPoint;
+        Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, true);
+        ChangeDirection(PlayerManager.Instance.PlayerXPos);
     }
-
-
     public void StopAttackAnim()
     {
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, false);
@@ -230,36 +237,36 @@ public abstract class EnemyClass : MonoBehaviour
         TurnManager.Instance.EnemyTurnEnd();
     }
 
-    private Vector2 FindPlayer()
+    private void SetPositionData(int NewXPos, int NewYPos)
     {
-        bool[] EnemySightFlag = ShadowCaster.SetShadowFlag(transform.position, 8);
-        Vector2 Destination;
-        for (int i = 0; i < EnemySightFlag.Length; i++)
-        {
-            if (EnemySightFlag[i])
-            {
-                if (MapManager.GetTileState(i) == eTileState.Player)
-                {
-                    DDPivot = -1;
-                    int TempX;
-                    int TempY;
-                    MapManager.ConvertIndexTo2D(i, out TempX, out TempY);
-                    Destination = new Vector2(TempX, TempY);
-                    return Destination;
-                }
-            }
-        }
-        Destination = new Vector2(-1, 0);
-
-        return Destination;
+        xPos = NewXPos;
+        yPos = NewYPos;
+        MapManager.SetTileState(xPos, yPos, eTileState.Enemy);
+        MapManager.SetMapObjects(xPos, yPos, this);
     }
-    public void SetDDPivot()
+
+    private void RemovePositionData()
+    {
+        MapManager.SetTileState(xPos, yPos, eTileState.BasicTile);
+        MapManager.SetMapObjects(xPos, yPos, null);
+    }
+
+    private void ChangeDirection(int LocalPosX)
+    {
+        Debug.Log(LocalPosX);
+        Debug.Log(xPos);
+        transform.rotation = Quaternion.Euler(0,
+            LocalPosX - xPos > 0 ? 0 : 180,
+                                               0);
+    }
+
+    private void SetDDPivot()
     {
         float ShortestMagnitude = Mathf.Infinity;
 
         for (int i = 0; i < defaultDestination.Length; i++)
         {
-            float NowMagniutde = (defaultDestination[i][0] - Position).magnitude;
+            float NowMagniutde = (defaultDestination[i][0] - new Vector2(xPos,yPos)).magnitude;
             if (ShortestMagnitude > NowMagniutde)
             {
                 DDPivot = i;
@@ -269,13 +276,9 @@ public abstract class EnemyClass : MonoBehaviour
         }
     }
 
-    public void UpdateTransformPivot()
+    private void UpdateTransformPivot()
     {
-        //Debug.Log(Position);
-        //Debug.Log(defaultDestination[DDPivot][0]);
-        //Debug.Log((Position - defaultDestination[DDPivot][0]).magnitude);
-        //Debug.Log((Position - defaultDestination[DDPivot][0]).magnitude == 0);
-        if ((Position - defaultDestination[DDPivot][0]).magnitude == 0)
+        if ((new Vector2(xPos,yPos) - defaultDestination[DDPivot][0]).magnitude == 0)
         {
             int RandomTransform = Random.Range(1, defaultDestination[DDPivot].Length);
             for (int i = 0; i < defaultDestination.Length; i++)
@@ -286,11 +289,31 @@ public abstract class EnemyClass : MonoBehaviour
                     break;
                 }
             }
-            //Debug.Log(DDPivot);
         }
     }
-    private void OnDisable()
+
+    private int[] FindPlayer()
     {
-        MapManager.SetTileState((int)position.x, (int)position.y, eTileState.BasicTile);
+        bool[] EnemySightFlag = ShadowCaster.SetShadowFlag(xPos,yPos, 8);
+        int[] Destination = new int[2];
+        for (int i = 0; i < EnemySightFlag.Length; i++)
+        {
+            if (EnemySightFlag[i])
+            {
+                if (MapManager.GetTileState(i) == eTileState.Player)
+                {
+                    DDPivot = -1;
+                    int TempX;
+                    int TempY;
+                    MapManager.ConvertIndexTo2D(i, out TempX, out TempY);
+                    Destination[0] = TempX;
+                    Destination[1] = TempY;
+                    return Destination;
+                }
+            }
+        }
+        Destination[0] = -1;//return Destination[0] = -1 if Can't Find Player
+
+        return Destination;
     }
 }

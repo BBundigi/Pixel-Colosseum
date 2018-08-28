@@ -62,25 +62,10 @@ public static class MapManager {
         SetEnemyDefaultDestination();
     }
 
-    private static void ConvertLocalToIndexs(ref int RowIndex, ref int ColumnIndex)
-    {
-        ColumnIndex = HEIGH - ColumnIndex;
-    }
-
     public static void ConvertPositionToIndexs(Vector2 Position, out int RowIndex, out int ColumnIndex)
     {
         RowIndex = (int)((Mathf.Round((Position.x + 6.016f) * 1000)) / 1000 / 0.64f);
         ColumnIndex = (int)((Mathf.Round((Position.y + 4.12f) * 1000)) / 1000 / 0.64f);
-    }
-
-    public static Vector2 ConvertWorldPositionToLocal(Vector2 Position)
-    {
-        int RowIndex = (int)((Mathf.Round((Position.x + 6.016f) * 1000)) / 1000 / 0.64f);
-        int ColumnIndex = (int)((Mathf.Round((Position.y + 4.12f) * 1000)) / 1000 / 0.64f);
-
-        Vector2 LocalPosition = new Vector2(RowIndex, ColumnIndex);
-
-        return LocalPosition;
     }
 
     public static Vector2 ConvertIndexsToPosition(int Row, int Column)

@@ -83,11 +83,12 @@ public class TouchManager : MonoBehaviour
                                 {
                                     case eTileState.Movable:
                                         {
-                                            PlayerManager.Instance.MovePosition(MapManager.ConvertIndexsToPosition(x, y));
+                                            PlayerManager.Instance.MovePosition(x,y);
                                             break;
                                         }
                                     case eTileState.Enemy:
                                         {
+                                            PlayerManager.Instance.PlayerAttack((EnemyClass)MapManager.GetMapObjects(x, y));
                                             break;
                                         }
                                     default:
@@ -149,7 +150,7 @@ public class TouchManager : MonoBehaviour
                     {
                         case eTileState.Movable:
                             {
-                                StartCoroutine(PlayerManager.Instance.MovePosition(MapManager.ConvertIndexsToPosition(x, y)));
+                                StartCoroutine(PlayerManager.Instance.MovePosition(x,y));
                                 break;
                             }
                         case eTileState.Enemy:

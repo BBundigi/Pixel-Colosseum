@@ -11,7 +11,7 @@ public class SkeletonKingAI : EnemyStateMachine
         {
             return eEnmeyState.Dead;
         }
-        else if (MapManager.CheckTileState(1, eTileState.Player, (int)AttachedEnemy.Position.x, (int)AttachedEnemy.Position.y))  
+        else if (MapManager.CheckTileState(1, eTileState.Player, AttachedEnemy.EnemyXPos, AttachedEnemy.EnemyYPos))  
         {
             return eEnmeyState.Attack;
         }

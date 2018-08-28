@@ -7,4 +7,9 @@ public class SkeletonKingManager : EnemyClass {
     {
         base.Start();
     }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+    }
 }

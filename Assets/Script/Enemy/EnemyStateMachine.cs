@@ -31,32 +31,25 @@ abstract public class EnemyStateMachine : MonoBehaviour {
                 break;
         }
     }
-
     protected virtual IEnumerator MoveState()
     {
         AttachedEnemy.Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, true);
-
-        Vector3 TargetPosition = AttachedEnemy.FindMovePosition();
+        int[] LocalPosition = AttachedEnemy.FindMovePosition();
+        Vector3 TargetPosition = MapManager.ConvertIndexsToPosition(LocalPosition[0],LocalPosition[1]);
         Vector3 MovePointPerSecond = (TargetPosition - transform.position) / 15;
-        AttachedEnemy.ChangeDirection(TargetPosition);
-        AttachedEnemy.RemovePositionData();
 
         while (transform.position != TargetPosition)
         {
             transform.position += MovePointPerSecond;
             yield return null;
         }
-
-        AttachedEnemy.SetPosition();
         TurnManager.Instance.EnemyTurnEnd();
         AttachedEnemy.Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, false);
     }
 
     protected virtual void AttackState()
     {
-        PlayerManager.Instance.HealthPoint -= AttachedEnemy.AttackPoint;
-        AttachedEnemy.Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, true);
-        AttachedEnemy.ChangeDirection(PlayerManager.Instance.transform.position);
+        AttachedEnemy.EnemyAttack();
     }
 
     protected virtual void DeadState()

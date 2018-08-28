@@ -6,18 +6,22 @@ public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance;
 
-    public Vector2 Position
+    public int PlayerXPos
     {
         get
         {
-            return position;
+            return xPos;
         }
     }
-    private int healthPoint, attackPoint;
 
-    private Vector2 position;
-    private float attackRange;
-
+    public int PlayerYPos
+    {
+        get
+        {
+            return yPos;
+        }
+    }
+    
     public int HealthPoint
     {
         get
@@ -55,6 +59,10 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    private int xPos, yPos;
+    private float attackRange;
+    private int healthPoint, attackPoint;
+
     [SerializeField]
     private Animator Anim;
 
@@ -77,31 +85,40 @@ public class PlayerManager : MonoBehaviour
         healthPoint = 100;
         attackPoint = 1000;
         attackRange = 0.25f;
-        SetPosition();
+        int x;
+        int y;
+
+        MapManager.ConvertPositionToIndexs(transform.position, out x, out y);
+        xPos = x;
+        yPos = y;
+
+        SetPosition(xPos, yPos);
     }
 
-    public IEnumerator MovePosition(Vector2 TargetPosition)
+    public IEnumerator MovePosition(int TargetXPos, int TargetYPos)
     {
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, true);
-        ChangeDirection(TargetPosition);
 
-        Vector3 MovePointPerSecond = ((Vector3)TargetPosition - transform.position) / 15;
-        MapManager.SetTileState(transform.position, eTileState.BasicTile);
-        RemoveMovalbeTile();
-        while (transform.position != (Vector3)TargetPosition)
+        
+
+        Vector3 TargetPosition = MapManager.ConvertIndexsToPosition(TargetXPos, TargetYPos);
+        Vector3 MovePointPerSecond = (TargetPosition - transform.position) / 15;
+
+        ChangeDirection(TargetXPos);
+        SetPosition(TargetXPos, TargetYPos);
+        while (transform.position != TargetPosition)
         {
             transform.position += MovePointPerSecond;
             yield return null;
         }
 
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, false);
-        SetPosition();
         TurnManager.Instance.PlayerTurnEnd();
     }
 
     public void PlayerAttack(EnemyClass Target)
     {
-        ChangeDirection(Target.transform.position);
+        ChangeDirection(Target.EnemyXPos);
         Target.Hp -= AttackPoint;
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, true);
     }
@@ -113,18 +130,20 @@ public class PlayerManager : MonoBehaviour
         TurnManager.Instance.PlayerTurnEnd();
     }
 
-    private void SetPosition()
+    private void SetPosition(int NewXPos, int NewYPos)
     {
-        position = MapManager.ConvertWorldPositionToLocal(transform.position);
-        MapManager.SetTileState(transform.position, eTileState.Player);
-        ShadowCaster.ShadowCast(transform.position, 8);
+        RemoveMovalbeTile();
+        xPos = NewXPos;
+        yPos = NewYPos;
+        MapManager.SetTileState(xPos,yPos, eTileState.Player);
+        ShadowCaster.ShadowCast(xPos,yPos, 8);
         SetMovableTile();
     }
 
-    private void ChangeDirection(Vector2 TargetVector2)
+    private void ChangeDirection(float LocalXPos)
     {
-        transform.rotation = Quaternion.Euler(0, 
-            TargetVector2.x - transform.position.x < 0 ?
+        transform.rotation = Quaternion.Euler(0,
+            LocalXPos - xPos < 0 ?
                                                 180 : 0,
                                               0);
     }
@@ -135,11 +154,14 @@ public class PlayerManager : MonoBehaviour
         {
             for(int j = -1; j< 2; j++)
             {
-                int targetX = (int)Position.x + i;
-                int targetY = (int)Position.y + j;
-                if (MapManager.GetTileState(targetX,targetY) == eTileState.BasicTile)
+                int targetX = xPos + i;
+                int targetY = yPos+ j;
+                if (targetX > 0 && targetY > 0 && targetX < MapManager.WIDTH && targetY < MapManager.HEIGH)
                 {
-                    MapManager.SetTileState(targetX, targetY, eTileState.Movable);
+                    if (MapManager.GetTileState(targetX, targetY) == eTileState.BasicTile)
+                    {
+                        MapManager.SetTileState(targetX, targetY, eTileState.Movable);
+                    }
                 }
             }
         }
@@ -147,15 +169,20 @@ public class PlayerManager : MonoBehaviour
 
     private void RemoveMovalbeTile()
     {
+        MapManager.SetTileState(xPos, yPos, eTileState.BasicTile);
         for (int i = -1; i < 2; i++)
         {
             for (int j = -1; j < 2; j++)
             {
-                int targetX = (int)Position.x + i;
-                int targetY = (int)Position.y + j;
-                if (MapManager.GetTileState(targetX, targetY) == eTileState.Movable)
+                int targetX = xPos + i;
+                int targetY = yPos + j;
+
+                if (targetX > 0 && targetY > 0 && targetX < MapManager.WIDTH && targetY < MapManager.HEIGH)
                 {
-                    MapManager.SetTileState(targetX, targetY, eTileState.BasicTile);
+                    if (MapManager.GetTileState(targetX, targetY) == eTileState.Movable)
+                    {
+                        MapManager.SetTileState(targetX, targetY, eTileState.BasicTile);
+                    }
                 }
             }
         }

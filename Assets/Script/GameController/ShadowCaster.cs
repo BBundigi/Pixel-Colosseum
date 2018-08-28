@@ -47,9 +47,9 @@ public static class ShadowCaster {
 
     }
 
-    public static void ShadowCast(Vector2 PlayerPosition, int Sight)
+    public static void ShadowCast(int XPos, int YPos, int Sight)
     {
-        bool[] FlagShadow = SetShadowFlag(PlayerPosition, Sight);
+        bool[] FlagShadow = SetShadowFlag(XPos,YPos, Sight);
 
         for (int i = 0; i < HEIGH; i++)
         {
@@ -67,10 +67,8 @@ public static class ShadowCaster {
         }
     }
 
-    public static bool[] SetShadowFlag(Vector2 PlayerPosition, int Distance)
+    public static bool[] SetShadowFlag(int x, int y, int Distance)
     {
-        int x, y;
-        MapManager.ConvertPositionToIndexs(PlayerPosition, out x, out y);
 
         distance = Distance;
 
