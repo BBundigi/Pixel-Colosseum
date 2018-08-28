@@ -253,8 +253,6 @@ public abstract class EnemyClass : MonoBehaviour
 
     private void ChangeDirection(int LocalPosX)
     {
-        Debug.Log(LocalPosX);
-        Debug.Log(xPos);
         transform.rotation = Quaternion.Euler(0,
             LocalPosX - xPos > 0 ? 0 : 180,
                                                0);

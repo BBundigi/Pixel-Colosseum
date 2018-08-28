@@ -3,14 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SaveDataController : MonoBehaviour {
+    PlayerInfo UserData;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    protected void SaveGame()
+    {
+        //SaveData
+    }
+
+    private IEnumerator SavePlayerData()
+    {
+        while(true)
+        {
+            SaveGame();
+            yield return new WaitForSeconds(60.0f);
+        }
+    }
+
 }
+
+struct PlayerInfo
+{
+    int PlayerPosX;
+    int PlayerPosY;//LocalPos
+}
+

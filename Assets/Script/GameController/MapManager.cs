@@ -16,7 +16,7 @@ public enum eTileState
 public static class MapManager {
     private static TextAsset MapDataText = Resources.Load<TextAsset>("MapDataText/MapDataText_Cave");
 
-    private static eTileState[,] mapData;
+    
 
     public static Object[] MapObjects;
 
@@ -32,6 +32,13 @@ public static class MapManager {
             return enemyDefaultDestination;
         }
     }
+
+    private static eTileState[,] mapData;
+
+    private const float WORLDPOS_LOCALXPOS_0 = 6.016f;
+    private const float WORLDPOS_LOCALYPOS_0 = 4.12f;
+    private const float PPU = .64f;
+    //Key Value for set MapManager!!
 
     static MapManager() {
         string StringMapData = MapDataText.ToString();
@@ -64,13 +71,13 @@ public static class MapManager {
 
     public static void ConvertPositionToIndexs(Vector2 Position, out int RowIndex, out int ColumnIndex)
     {
-        RowIndex = (int)((Mathf.Round((Position.x + 6.016f) * 1000)) / 1000 / 0.64f);
-        ColumnIndex = (int)((Mathf.Round((Position.y + 4.12f) * 1000)) / 1000 / 0.64f);
+        RowIndex = (int)((Mathf.Round((Position.x + WORLDPOS_LOCALXPOS_0) * 1000)) / 1000 / PPU);
+        ColumnIndex = (int)((Mathf.Round((Position.y + WORLDPOS_LOCALYPOS_0) * 1000)) / 1000 / PPU);
     }
 
     public static Vector2 ConvertIndexsToPosition(int Row, int Column)
     {
-        return new Vector2(-6.016f + Row * 0.64f, -4.12f + Column * 0.64f);
+        return new Vector2(-WORLDPOS_LOCALXPOS_0 + Row * PPU, -WORLDPOS_LOCALYPOS_0 + Column * PPU);
     }
 
     public static void ConvertIndexTo2D(int TargetIndex, out int RowIndex, out int ColumnIndex)
@@ -165,6 +172,7 @@ public static class MapManager {
 
     private static void SetEnemyDefaultDestination()
     {
+        //Use Secene number for set Defualt Destination In EnemyClass 
         Vector2 DefaultPosition0 = new Vector2(3, 12);
         Vector2 DefaultPosition1 = new Vector2(3, 7);
         Vector2 DefaultPosition2 = new Vector2(3, 2);

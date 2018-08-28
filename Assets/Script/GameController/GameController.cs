@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameController : MonoBehaviour {
+public class GameController : SaveDataController {
 
-    void Awake()
-    {
-    }
+    public delegate void VoidCallBack();
+
+    public VoidCallBack ToolBarCallBack;
+
 }

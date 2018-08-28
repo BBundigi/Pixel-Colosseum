@@ -10,6 +10,9 @@ public class TouchManager : MonoBehaviour
 
     private Vector2 StartPos;
 
+    private Camera MainCamera;
+
+
     private bool isDrag;
 
     private float ZoomSpeed;
@@ -33,7 +36,8 @@ public class TouchManager : MonoBehaviour
     {
         TouchDetectors = GameObject.FindWithTag("Player").GetComponentsInChildren<BoxCollider2D>();
         ZoomSpeed = 1;
-        CameraMoveSpeed = 0.1f;
+        CameraMoveSpeed = 0.05f;
+        MainCamera = Camera.main;
     }
     void OnEnable()
     {
@@ -49,7 +53,7 @@ public class TouchManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Vector2 TargetVector = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 TargetVector = MainCamera.ScreenToWorldPoint(Input.mousePosition);
         } 
         if (Input.touchCount == 1)
         {
@@ -64,14 +68,14 @@ public class TouchManager : MonoBehaviour
                         isDrag = true;
                         Vector2 deltaTouchPos = touch.deltaPosition;
 
-                        Camera.main.transform.position += (Vector3)deltaTouchPos * CameraMoveSpeed;
+                        MainCamera.transform.position += (Vector3)deltaTouchPos * CameraMoveSpeed;
                         break;
                     }
                 case TouchPhase.Ended:
                     {
                         if (!isDrag)
                         {
-                            Vector2 WorldPosition = Camera.main.ScreenToWorldPoint(touch.position);
+                            Vector2 WorldPosition = MainCamera.ScreenToWorldPoint(touch.position);
 
                             int x;
                             int y;
@@ -116,9 +120,9 @@ public class TouchManager : MonoBehaviour
 
             float deltaTouchesMag = TouchesMag - prevTouchesMag;
 
-            if (Camera.main.orthographic)
+            if (MainCamera.orthographic)
             {
-                Camera.main.orthographicSize += deltaTouchesMag * ZoomSpeed;
+                MainCamera.orthographicSize += deltaTouchesMag * ZoomSpeed;
             }
         }
     }
@@ -132,7 +136,7 @@ public class TouchManager : MonoBehaviour
             isDrag = true;
             Vector2 deltaMousePos = m_Event.delta;
 
-            Camera.main.transform.position -= (Vector3)deltaMousePos * CameraMoveSpeed;
+            MainCamera.transform.position -= (Vector3)deltaMousePos * CameraMoveSpeed;
 
         }
 
@@ -140,7 +144,7 @@ public class TouchManager : MonoBehaviour
         {
             if (!isDrag)
             {
-                Vector2 WorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                Vector2 WorldPosition = MainCamera.ScreenToWorldPoint(Input.mousePosition);
                 int x;
                 int y;
                 ConvertTouchPositionToIndexs(WorldPosition, out x, out y);
