@@ -1,0 +1,12 @@
+EnemyClass -> SkeletonKing StateMachine 맴버 변수로 Instance 소유
+
+
+직렬 같은 느낌
+
+VS
+
+EnemyClass - SkeletonKing StateMachine 서로 병렬로 존재
+
+서로가 서로의 Instance를 맴버변수로 소유
+
+병렬같은느낌

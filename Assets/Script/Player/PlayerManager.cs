@@ -71,6 +71,12 @@ public class PlayerManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            int x;
+            int y;
+
+            MapManager.ConvertPositionToIndexs(transform.position, out x, out y);
+
+            SetPositionData(x, y);
         }
         else
         {
@@ -85,27 +91,20 @@ public class PlayerManager : MonoBehaviour
         healthPoint = 100;
         attackPoint = 1000;
         attackRange = 0.25f;
-        int x;
-        int y;
 
-        MapManager.ConvertPositionToIndexs(transform.position, out x, out y);
-        xPos = x;
-        yPos = y;
-
-        SetPosition(xPos, yPos);
     }
 
     public IEnumerator MovePosition(int TargetXPos, int TargetYPos)
     {
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, true);
 
-        
-
         Vector3 TargetPosition = MapManager.ConvertIndexsToPosition(TargetXPos, TargetYPos);
         Vector3 MovePointPerSecond = (TargetPosition - transform.position) / 15;
+        RemoveMovalbeTile();
+        SetPositionData(TargetXPos, TargetYPos);
+        
 
         ChangeDirection(TargetXPos);
-        SetPosition(TargetXPos, TargetYPos);
         while (transform.position != TargetPosition)
         {
             transform.position += MovePointPerSecond;
@@ -130,14 +129,11 @@ public class PlayerManager : MonoBehaviour
         TurnManager.Instance.PlayerTurnEnd();
     }
 
-    private void SetPosition(int NewXPos, int NewYPos)
+    private void SetPositionData(int NewXPos, int NewYPos)
     {
-        RemoveMovalbeTile();
         xPos = NewXPos;
         yPos = NewYPos;
         MapManager.SetTileState(xPos,yPos, eTileState.Player);
-        ShadowCaster.ShadowCast(xPos,yPos, 8);
-        SetMovableTile();
     }
 
     private void ChangeDirection(float LocalXPos)
@@ -148,7 +144,7 @@ public class PlayerManager : MonoBehaviour
                                               0);
     }
 
-    private void SetMovableTile()
+    public void SetMovableTile()
     {
         for(int i = -1; i < 2; i++)
         {

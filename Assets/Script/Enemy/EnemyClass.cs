@@ -84,7 +84,7 @@ public abstract class EnemyClass : MonoBehaviour
 
         int rowIndex, columnIndex;
         MapManager.ConvertPositionToIndexs(transform.position,out rowIndex, out columnIndex);
-
+        TurnManager.Instance.SetEnemyList(this);
         xPos = rowIndex;
         yPos = columnIndex;
     }
@@ -233,6 +233,8 @@ public abstract class EnemyClass : MonoBehaviour
 
     public void AfterDeadAnim()
     {
+        TurnManager.Instance.RemoveEnemyList(this);
+        MapManager.SetTileState(xPos, yPos, eTileState.BasicTile);
         Destroy(gameObject);
         TurnManager.Instance.EnemyTurnEnd();
     }

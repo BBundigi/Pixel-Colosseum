@@ -35,9 +35,9 @@ public static class MapManager {
 
     private static eTileState[,] mapData;
 
-    private const float WORLDPOS_LOCALXPOS_0 = 6.016f;
-    private const float WORLDPOS_LOCALYPOS_0 = 4.12f;
-    private const float PPU = .64f;
+    private const float WORLDPOS_LOCAL_XPOS_0 = -9.5f;
+    private const float WORLDPOS_LOCAL_YPOS_0 = -7.5f;
+    public const float TILE_GAP = 1.0f;
     //Key Value for set MapManager!!
 
     static MapManager() {
@@ -71,13 +71,13 @@ public static class MapManager {
 
     public static void ConvertPositionToIndexs(Vector2 Position, out int RowIndex, out int ColumnIndex)
     {
-        RowIndex = (int)((Mathf.Round((Position.x + WORLDPOS_LOCALXPOS_0) * 1000)) / 1000 / PPU);
-        ColumnIndex = (int)((Mathf.Round((Position.y + WORLDPOS_LOCALYPOS_0) * 1000)) / 1000 / PPU);
+        RowIndex = (int)((Mathf.Round((Position.x - WORLDPOS_LOCAL_XPOS_0) * 1000)) / 1000 / TILE_GAP);
+        ColumnIndex = (int)((Mathf.Round((Position.y - WORLDPOS_LOCAL_YPOS_0) * 1000)) / 1000 / TILE_GAP);
     }
 
     public static Vector2 ConvertIndexsToPosition(int Row, int Column)
     {
-        return new Vector2(-WORLDPOS_LOCALXPOS_0 + Row * PPU, -WORLDPOS_LOCALYPOS_0 + Column * PPU);
+        return new Vector2(WORLDPOS_LOCAL_XPOS_0 + Row * TILE_GAP, WORLDPOS_LOCAL_YPOS_0 + Column * TILE_GAP);
     }
 
     public static void ConvertIndexTo2D(int TargetIndex, out int RowIndex, out int ColumnIndex)

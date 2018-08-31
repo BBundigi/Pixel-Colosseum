@@ -6,12 +6,14 @@ public class TurnManager : MonoBehaviour
 {
 
     public static TurnManager Instance;
+    private List<EnemyClass> Enemys;
     private int AmountOfEnemy, EnemyTurnEndNumber;
 
     void Awake()
     {
         if (Instance == null)
         {
+            Enemys = new List<EnemyClass>();
             Instance = this;
         }
         else
@@ -25,20 +27,34 @@ public class TurnManager : MonoBehaviour
     
     void Start()
     {
-        AmountOfEnemy = GameObject.FindGameObjectsWithTag("Enemy").Length;
+        PlayerTurnStart();
+    }
+
+    public void SetEnemyList(EnemyClass TargetEnemy)
+    {
+        Enemys.Add(TargetEnemy);
+        AmountOfEnemy++;
+    }
+
+    public void RemoveEnemyList(EnemyClass TargetEnemy)
+    {
+        if(!Enemys.Remove(TargetEnemy))
+        {
+            Debug.Log("Error Can't Remove EnemyClass!!");
+        }
+        AmountOfEnemy--;
     }
 
     public void PlayerTurnEnd()
     {
-        GameObject[] EnemyGameObject = GameObject.FindGameObjectsWithTag("Enemy");
-        for (int i = 0; i < EnemyGameObject.Length; i++)
-        {
-            EnemyGameObject[i].GetComponent<EnemyStateMachine>().RunState();
-        }
-        AmountOfEnemy = GameObject.FindGameObjectsWithTag("Enemy").Length;
         if(AmountOfEnemy == 0)
         {
             PlayerTurnStart();
+        }
+
+        for (int i = 0; i < Enemys.Count; i++)
+        {
+            Enemys[i].GetComponent<EnemyStateMachine>().RunState();
         }
     }
 
@@ -52,13 +68,14 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-    public void PlayerTurnStart()
+    private void PlayerTurnStart()
     {
         TouchManager.Instance.enabled = true;
-        GameObject[] EnemyGameObject = GameObject.FindGameObjectsWithTag("Enemy");
-        for (int i = 0; i < EnemyGameObject.Length; i++)
+        PlayerManager.Instance.SetMovableTile();
+
+        for (int i = 0; i < Enemys.Count; i++)
         {
-            EnemyGameObject[i].GetComponent<EnemyStateMachine>().enabled = false;
+            Enemys[i].GetComponent<EnemyStateMachine>().enabled = false;
         }
     }
 }

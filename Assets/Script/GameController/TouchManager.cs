@@ -32,23 +32,14 @@ public class TouchManager : MonoBehaviour
             }
         }
     }
+
     void Start()
     {
-        TouchDetectors = GameObject.FindWithTag("Player").GetComponentsInChildren<BoxCollider2D>();
         ZoomSpeed = 1;
         CameraMoveSpeed = 0.05f;
         MainCamera = Camera.main;
     }
-    void OnEnable()
-    {
-        if (TouchDetectors != null)
-        {
-            for (int i = 0; i < TouchDetectors.Length; i++)
-            {
-                TouchDetectors[i].gameObject.SetActive(true);
-            }
-        }
-    }
+
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -174,8 +165,12 @@ public class TouchManager : MonoBehaviour
     }
     private void ConvertTouchPositionToIndexs(Vector2 TargetVector, out int x, out int y)
     {
-        x = (int)((TargetVector.x + 6.016f + .32f) / .64f);
-        y = (int)((TargetVector.y + 4.12f + .32f) / .64f);
+        int tempX, tempY;
+        float tileGap_Half = MapManager.TILE_GAP / 2;
+        MapManager.ConvertPositionToIndexs(TargetVector + new Vector2(tileGap_Half, tileGap_Half), out tempX, out tempY);
+
+        x = tempX;
+        y = tempY;
     }
 }
 
