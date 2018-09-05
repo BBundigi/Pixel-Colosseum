@@ -2,17 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum eTileState
-{
-    Shadow,
-    BasicTile,
-    Movable,
-    Wall,
-    Player,
-    Enemy
-}
-
-
 public static class MapManager {
     private static TextAsset MapDataText = Resources.Load<TextAsset>("MapDataText/MapDataText_Cave");
 
@@ -35,8 +24,8 @@ public static class MapManager {
 
     private static eTileState[,] mapData;
 
-    private const float WORLDPOS_LOCAL_XPOS_0 = -9.5f;
-    private const float WORLDPOS_LOCAL_YPOS_0 = -7.5f;
+    private const float WORLDPOS_LOCAL_XPOS_0 = -9;
+    private const float WORLDPOS_LOCAL_YPOS_0 = -7;
     public const float TILE_GAP = 1.0f;
     //Key Value for set MapManager!!
 

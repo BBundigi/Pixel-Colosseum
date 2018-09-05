@@ -31,11 +31,13 @@ public class PlayerManager : MonoBehaviour
         set
         {
             healthPoint = value;
+            UIController.Instance.SetHP(MaxHealthPoint, value);
             if (healthPoint <= 0)
             {
                 Anim.SetBool(AnimatorHashKeys.Instance.AnimIsDeadHash, true);
                 TurnManager.Instance.enabled = false;
             }
+                
         }
     }
 
@@ -59,6 +61,7 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    private int MaxHealthPoint;
     private int xPos, yPos;
     private float attackRange;
     private int healthPoint, attackPoint;
@@ -88,6 +91,7 @@ public class PlayerManager : MonoBehaviour
     }
     void Start()
     {
+        MaxHealthPoint = 100;
         healthPoint = 100;
         attackPoint = 1000;
         attackRange = 0.25f;
@@ -101,10 +105,9 @@ public class PlayerManager : MonoBehaviour
         Vector3 TargetPosition = MapManager.ConvertIndexsToPosition(TargetXPos, TargetYPos);
         Vector3 MovePointPerSecond = (TargetPosition - transform.position) / 15;
         RemoveMovalbeTile();
-        SetPositionData(TargetXPos, TargetYPos);
-        
-
         ChangeDirection(TargetXPos);
+
+        SetPositionData(TargetXPos, TargetYPos);
         while (transform.position != TargetPosition)
         {
             transform.position += MovePointPerSecond;

@@ -1,12 +1,42 @@
-EnemyClass -> SkeletonKing StateMachine 맴버 변수로 Instance 소유
+상황에 따른 TouchManager 기능의 변화 구현
 
+1.하나의 스크립트에 다양한 플래그를 박아서 플래그에 따라 서로다른 기능을 하게함
+--> 다양한 변화가 없을때 구현하기 쉽고 if를 떡칠하면 로직짜기도 쉬움, 대신 가독성이 씹똥망일듯
 
-직렬 같은 느낌
+Enum TouchMode를 사용 -> TouchMode에 따른 함수 제작 -> OnGUI나 Update에서 죤시나게 부름
 
 VS
 
-EnemyClass - SkeletonKing StateMachine 서로 병렬로 존재
+2. 다양한 스크립트를 Enable = true or false 시켜서 서로다른 기능을 하게함
+--> 다양한 변화에도 Enable 시점과 Disable시점만 잘 컨트롤 해준다면 오류없이 작동함
+    대신 이를위한 Controller스크립트가 또 필요할듯
 
-서로가 서로의 Instance를 맴버변수로 소유
+1번째꺼 구현후 안되면 2번째껄로 넘어가자
 
-병렬같은느낌
+인벤토리 구현
+
+가지고 있는것
+
+각각에 Slot들에 할당된 SlotScript
+
+구현방법 첫번째
+
+1.현재 인벤토리 상태를 저장하고 있는 배열?(item id의 어레이) 을 가지고있고 플레이어가 인벤토리를 열때마다 해당정보를가지고
+인벤토리를 초기화 시킨뒤 인벤토리를 뛰운다
+
+--> 로직 짜기가 2번보다 훨씬쉬움, 그냥 대충 컴퓨터한테 믿고 시키면됨 대신 뻘연산이 자주 들어감
+
+2.플레이어가 아이템을 얻는 시점과 잃는 시점을 기준으로 대충 로직을 때려박아서 인벤토리를 초기화시킨다.
+
+-->로직 짜기가 어렵지만 성능상 이득 
+
+## 평소에 Inventory를 끄고있어서 Inventory를 SetActive true하는순간 인벤토리를 초기하는게 맞는거같음
+
+ToDoList
+
+--> Player Status 마저 채우기 # 같은 컴포넌트를 공유한 게임오브젝트 두개를 만들수 있을까?
+                               아님 실시간으로 정보를 전달해줘야할까?
+							   아니면 리메이크해서 다른형식으로 만들까?
+--> Pixel Perfect을 위한 Othgraphic size 계산해내기...혹시못찾으면 깃헙에서...줍줍..
+
+--> Sprite vs Texture 차이 알아보기

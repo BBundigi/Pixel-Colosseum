@@ -24,10 +24,16 @@ public class TurnManager : MonoBehaviour
             }
         }
     }
-    
-    void Start()
+
+    public void PlayerTurnStart()
     {
-        PlayerTurnStart();
+        TouchManager.Instance.enabled = true;
+        PlayerManager.Instance.SetMovableTile();
+
+        for (int i = 0; i < Enemys.Count; i++)
+        {
+            Enemys[i].GetComponent<EnemyStateMachine>().enabled = false;
+        }
     }
 
     public void SetEnemyList(EnemyClass TargetEnemy)
@@ -68,14 +74,4 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-    private void PlayerTurnStart()
-    {
-        TouchManager.Instance.enabled = true;
-        PlayerManager.Instance.SetMovableTile();
-
-        for (int i = 0; i < Enemys.Count; i++)
-        {
-            Enemys[i].GetComponent<EnemyStateMachine>().enabled = false;
-        }
-    }
 }

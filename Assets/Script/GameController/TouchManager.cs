@@ -6,16 +6,43 @@ public class TouchManager : MonoBehaviour
 {
     public static TouchManager Instance;
 
+   
+
+    public eTouchMode NowMode
+    {
+        get
+        {
+            return nowMode;
+        }
+        set
+        {
+            nowMode = value;
+            switch(nowMode)
+            {
+                case eTouchMode.CloseInventory:
+                    {
+                        isDrag = false;
+                        break;
+                    }
+                case eTouchMode.GamePlay:
+                    {
+                        break;
+                    }
+            }
+        }
+    }
+    private eTouchMode nowMode;
+
     private Collider2D[] TouchDetectors;
 
     private Vector2 StartPos;
 
     private Camera MainCamera;
 
-
     private bool isDrag;
 
     private float ZoomSpeed;
+
     private float CameraMoveSpeed;
 
     void Awake()
@@ -42,10 +69,6 @@ public class TouchManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            Vector2 TargetVector = MainCamera.ScreenToWorldPoint(Input.mousePosition);
-        } 
         if (Input.touchCount == 1)
         {
 
@@ -120,6 +143,37 @@ public class TouchManager : MonoBehaviour
 
     private void OnGUI()
     {
+        switch(NowMode)
+        {
+            case eTouchMode.GamePlay:
+                {
+                    TouchInGamePlay();
+                    break;
+                }
+            case eTouchMode.CloseInventory:
+                {
+                    break;
+                }
+        }
+    }
+    private void TouchInCloseInventory()
+    {
+        Event m_Event = Event.current;
+
+        if (m_Event.type == EventType.MouseDown)
+        {
+            Vector2 mousePosition = MainCamera.ScreenToWorldPoint(Input.mousePosition);
+
+            RaycastHit2D hit = Physics2D.Raycast(mousePosition,Vector2.zero);
+
+            if(!hit)
+            {
+
+            }
+        }
+    }
+    private void TouchInGamePlay()
+    {
         Event m_Event = Event.current;
 
         if (m_Event.type == EventType.MouseDrag)
@@ -128,7 +182,6 @@ public class TouchManager : MonoBehaviour
             Vector2 deltaMousePos = m_Event.delta;
 
             MainCamera.transform.position -= (Vector3)deltaMousePos * CameraMoveSpeed;
-
         }
 
         if (m_Event.type == EventType.MouseUp)
@@ -139,18 +192,20 @@ public class TouchManager : MonoBehaviour
                 int x;
                 int y;
                 ConvertTouchPositionToIndexs(WorldPosition, out x, out y);
-                if (x > 0 || y > 0 || x < MapManager.WIDTH || y < MapManager.HEIGH)           
+                if (x > 0 || y > 0 || x < MapManager.WIDTH || y < MapManager.HEIGH)
                 {
                     switch (MapManager.GetTileState(x, y))
                     {
                         case eTileState.Movable:
                             {
-                                StartCoroutine(PlayerManager.Instance.MovePosition(x,y));
+                                StartCoroutine(PlayerManager.Instance.MovePosition(x, y));
+                                enabled = false;
                                 break;
                             }
                         case eTileState.Enemy:
                             {
                                 PlayerManager.Instance.PlayerAttack((EnemyClass)MapManager.GetMapObjects(x, y));
+                                enabled = false;
                                 break;
                             }
                         default:
@@ -163,6 +218,7 @@ public class TouchManager : MonoBehaviour
             isDrag = false;
         }
     }
+
     private void ConvertTouchPositionToIndexs(Vector2 TargetVector, out int x, out int y)
     {
         int tempX, tempY;
