@@ -8432,6 +8432,11 @@ Prefab:
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0cb54607edce83c43b37736fc8ba58ee, type: 2}
   m_IsPrefabAsset: 0
+--- !u!1 &1793429606 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1773089100235348, guid: 8660744066bca5541bdeb5afd64d90ed,
+    type: 2}
+  m_PrefabInternal: {fileID: 1954410715}
 --- !u!1 &1797754179
 GameObject:
   m_ObjectHideFlags: 0
@@ -8926,7 +8931,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1968526340
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8957,8 +8962,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3fe551cf0894a14da532889f2c70d68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ChooseItemGameObjects: []
-  ChoosItemsParent: {fileID: 0}
+  ChooseItemGameObjects:
+  - {fileID: 1793429606}
+  - {fileID: 1992055940}
+  - {fileID: 1997837232}
+  ChoosItemsParent: {fileID: 1106382792}
+--- !u!1 &1992055940 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1773089100235348, guid: 8660744066bca5541bdeb5afd64d90ed,
+    type: 2}
+  m_PrefabInternal: {fileID: 750989695}
+--- !u!1 &1997837232 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1773089100235348, guid: 8660744066bca5541bdeb5afd64d90ed,
+    type: 2}
+  m_PrefabInternal: {fileID: 646333640}
 --- !u!1001 &1999300109
 Prefab:
   m_ObjectHideFlags: 0
