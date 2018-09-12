@@ -18,7 +18,6 @@ public class SaveDataController : MonoBehaviour {
             yield return new WaitForSeconds(60.0f);
         }
     }
-
 }
 
 struct PlayerInfo

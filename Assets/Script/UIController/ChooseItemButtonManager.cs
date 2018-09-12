@@ -10,7 +10,6 @@ public class ChooseItemButtonManager: MonoBehaviour {
     private GameObject ChoosItemsParent;
 
     private ChooseItemButton[] ChoosItemButtons;
-    private VoidCallBack ButtonFunction;
 
     private string GetRandomPotionText;
     private string GetRandomStatusText;
@@ -47,19 +46,21 @@ public class ChooseItemButtonManager: MonoBehaviour {
     public void GenerateButtons()
     {
         ChoosItemsParent.SetActive(true);
+        TouchManager.Instance.NowMode = eTouchMode.ChooseItem;
 
         for (int i = 0; i < ChooseItemGameObjects.Length; i++)
         {
-            eChooseItemMode itemMode = EnumManager.RandomEnumValue<eChooseItemMode>();
-            switch (itemMode)
+            eChooseItemMode m_itemMode = EnumManager.RandomEnumValue<eChooseItemMode>();
+            VoidCallBack m_buttonFunction = null;
+            switch (m_itemMode)
             {
                 case eChooseItemMode.RandomPotion:
                     {
-                        Sprite tempSprite = ItemDatas.ItemSprites[ItemDatas.PotionID[Random.Range(0, ItemDatas.PotionID.Length)]];
-                        ButtonFunction += Func_RandomPotion;
-                        ButtonFunction += CloseButtons;
+                        Sprite tempSprite = ItemDatas.ItemSprites[(int)ItemDatas.GetRandomPotionID()];
+                        m_buttonFunction += Func_RandomPotion;
+                        m_buttonFunction += CloseButtons;
                         
-                        ChoosItemButtons[i].SettingButtons(tempSprite,GetRandomPotionText,ButtonFunction);
+                        ChoosItemButtons[i].SettingButtons(tempSprite,GetRandomPotionText, m_buttonFunction);
                         break;
                     }
                 case eChooseItemMode.RandomStatus:
@@ -69,7 +70,7 @@ public class ChooseItemButtonManager: MonoBehaviour {
             }
         }
     }    
-    public void CloseButtons()
+    private void CloseButtons()
     {
         ChoosItemsParent.SetActive(false);
     }
@@ -78,8 +79,7 @@ public class ChooseItemButtonManager: MonoBehaviour {
     {
         for (int i = 0; i < 3; i++)
         {
-            int random = ItemDatas.PotionID[Random.Range(0, ItemDatas.PotionID.Length)];
-
+            eItemID random = ItemDatas.GetRandomPotionID();
             InventoryController.Instance.SetInventoryList(random);
         }
         TurnManager.Instance.PlayerTurnStart();

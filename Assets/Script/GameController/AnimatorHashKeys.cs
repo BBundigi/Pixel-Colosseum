@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AnimatorHashKeys:MonoBehaviour {
+public class AnimatorHashKeys : MonoBehaviour {
 
     public static AnimatorHashKeys Instance;
     [HideInInspector]

@@ -1,13 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InventoryController : MonoBehaviour {
     public static InventoryController Instance;
     [SerializeField]
     private GameObject InventoryPanel;
-
-    private List<int> InventoryItemIDs;
+    [SerializeField]
+    private Button InventoryOpenButton;
+    private List<eItemID> InventoryItemIDs;
     private Slot[] Slots;
 
     private void Awake()
@@ -15,7 +17,7 @@ public class InventoryController : MonoBehaviour {
         if (Instance == null)
         {
             Slots = GetComponentsInChildren<Slot>(true);
-            InventoryItemIDs = new List<int>();
+            InventoryItemIDs = new List<eItemID>();
             Instance = this;
         }
         else
@@ -31,14 +33,24 @@ public class InventoryController : MonoBehaviour {
     {
         InventoryPanel.SetActive(true);
         ResetSlotData();
+        TouchManager.Instance.NowMode = eTouchMode.CloseInventory;
+        InventoryOpenButton.enabled = false;
     }
 
-    public void ColoseInventory()
+    public void CloseInventory()
     {
         InventoryPanel.SetActive(false);
+        TouchManager.Instance.NowMode = eTouchMode.GamePlay;
+        InventoryOpenButton.enabled = true;
     }
 
-    public void SetInventoryList(int TargetItemID)
+    public void CloseInventory_ForThrowing()
+    {
+        InventoryPanel.SetActive(false);
+        InventoryOpenButton.enabled = true;
+    }
+
+    public void SetInventoryList(eItemID TargetItemID)
     {
         InventoryItemIDs.Add(TargetItemID);
     }
@@ -52,8 +64,7 @@ public class InventoryController : MonoBehaviour {
     {
         for(int i =0; i < InventoryItemIDs.Count; i++)
         {
-            Slots[i].SetSprite(ItemDatas.ItemSprites[InventoryItemIDs[i]]);
+            Slots[i].SetSprite(InventoryItemIDs[i]);
         }
     }
-
 }

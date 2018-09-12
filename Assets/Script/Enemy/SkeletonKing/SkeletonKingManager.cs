@@ -8,8 +8,26 @@ public class SkeletonKingManager : EnemyClass {
         base.Start();
     }
 
-    protected override void OnDisable()
+    protected override eEnemyState ChooseNextState()
     {
-        base.OnDisable();
+        PlayBuffs();
+        if (MapManager.CheckTileState(1, eTileState.Player, localXPos, localYPos))
+        {
+            return eEnemyState.Attack;
+        }
+        else
+        {
+            return eEnemyState.Move;
+        }
+    }
+
+    protected override void  EnemyMove()
+    {
+        base.EnemyMove();
+    }
+
+    protected override void EnemyAttack()
+    {
+        base.EnemyAttack();
     }
 }

@@ -47,9 +47,9 @@ public static class ShadowCaster {
 
     }
 
-    public static void ShadowCast(int XPos, int YPos, int Sight)
+    public static void ShadowCast(int EnemyXPos, int localYPos, int Sight)
     {
-        bool[] FlagShadow = SetShadowFlag(XPos,YPos, Sight);
+        bool[] FlagShadow = SetShadowFlag(EnemyXPos,localYPos, Sight);
 
         for (int i = 0; i < HEIGH; i++)
         {

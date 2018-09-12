@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIController : MonoBehaviour {
+public class PlayerStatusUIManager : MonoBehaviour {
 
-    public static UIController Instance;
+    public static PlayerStatusUIManager Instance;
     [SerializeField]
     private GameObject PlayerStatus;
 
@@ -27,7 +27,7 @@ public class UIController : MonoBehaviour {
         }
     }
 
-    public void SetHP(float MaxHP,float CurrentHP)
+    public void SetHP(float MaxHP, float CurrentHP)
     {
         HPBar.value = CurrentHP / MaxHP;
     }

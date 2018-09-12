@@ -24,8 +24,8 @@ public static class MapManager {
 
     private static eTileState[,] mapData;
 
-    private const float WORLDPOS_LOCAL_XPOS_0 = -9;
-    private const float WORLDPOS_LOCAL_YPOS_0 = -7;
+    private const float WORLDPOS_LOCAL_EnemyXPos_0 = -9;
+    private const float WORLDPOS_LOCAL_localYPos_0 = -7;
     public const float TILE_GAP = 1.0f;
     //Key Value for set MapManager!!
 
@@ -60,13 +60,13 @@ public static class MapManager {
 
     public static void ConvertPositionToIndexs(Vector2 Position, out int RowIndex, out int ColumnIndex)
     {
-        RowIndex = (int)((Mathf.Round((Position.x - WORLDPOS_LOCAL_XPOS_0) * 1000)) / 1000 / TILE_GAP);
-        ColumnIndex = (int)((Mathf.Round((Position.y - WORLDPOS_LOCAL_YPOS_0) * 1000)) / 1000 / TILE_GAP);
+        RowIndex = (int)((Mathf.Round((Position.x - WORLDPOS_LOCAL_EnemyXPos_0) * 1000)) / 1000 / TILE_GAP);
+        ColumnIndex = (int)((Mathf.Round((Position.y - WORLDPOS_LOCAL_localYPos_0) * 1000)) / 1000 / TILE_GAP);
     }
 
     public static Vector2 ConvertIndexsToPosition(int Row, int Column)
     {
-        return new Vector2(WORLDPOS_LOCAL_XPOS_0 + Row * TILE_GAP, WORLDPOS_LOCAL_YPOS_0 + Column * TILE_GAP);
+        return new Vector2(WORLDPOS_LOCAL_EnemyXPos_0 + Row * TILE_GAP, WORLDPOS_LOCAL_localYPos_0 + Column * TILE_GAP);
     }
 
     public static void ConvertIndexTo2D(int TargetIndex, out int RowIndex, out int ColumnIndex)
@@ -80,33 +80,83 @@ public static class MapManager {
         return ColumnIndex * WIDTH + RowIndex;
     }
 
-    public static void SetTileState(Vector2 TargetPosition, eTileState TargetTileState)
+    public static bool AddTileState(Vector2 TargetPosition, eTileState TargetTileState)
     {
         int RowIndex;
         int ColumnIndex;
         ConvertPositionToIndexs(TargetPosition, out RowIndex, out ColumnIndex);
+
+        if (RowIndex < 0 || RowIndex >= WIDTH || ColumnIndex < 0 || ColumnIndex >= HEIGH)
+        {
+            return true;
+        }
         
-        mapData[ColumnIndex, RowIndex] = TargetTileState;
+        mapData[ColumnIndex, RowIndex] += (int)TargetTileState;
+        return false;
     }
 
-    public static void SetTileState(int RowIndex, int ColumnIndex , eTileState TargetTileState)
+    public static bool AddTileState(int RowIndex, int ColumnIndex , eTileState TargetTileState)
     {
-        mapData[ColumnIndex, RowIndex] = TargetTileState;
+        if (RowIndex < 0 || RowIndex >= WIDTH || ColumnIndex < 0 || ColumnIndex >= HEIGH)
+        {
+            return false;
+        }
+
+        mapData[ColumnIndex, RowIndex] += (int)TargetTileState;
+        return true;
     }
 
-    public static void SetTileState(int Index1D, eTileState TargetTileState)
+    public static bool AddTileState(int Index1D, eTileState TargetTileState)
     {
         int ColumnIndex;
         int RowIndex;
         ConvertIndexTo2D(Index1D, out RowIndex, out ColumnIndex);
 
-        mapData[ColumnIndex, RowIndex] = TargetTileState;
+        if (RowIndex < 0 || RowIndex >= WIDTH || ColumnIndex < 0 || ColumnIndex >= HEIGH)
+        {
+            return false;
+        }
+
+        mapData[ColumnIndex, RowIndex] += (int)TargetTileState;
+        return true;
     }
 
-    public static void SetMapObjects(int RowIndex, int ColumnIndex, Object TargetObject)
+    public static bool RemoveTileState(int RowIndex, int ColumnIndex, eTileState TargetTileState)
     {
+        if (RowIndex < 0 || RowIndex >= WIDTH || ColumnIndex < 0 || ColumnIndex >= HEIGH)
+        {
+            return false;
+        }
+        mapData[ColumnIndex, RowIndex] -= (int)TargetTileState;
+        return true;
+    }
+
+    public static bool RemoveTileState(int Index1D, eTileState TargetTileState)
+    {
+        int ColumnIndex;
+        int RowIndex;
+        ConvertIndexTo2D(Index1D, out RowIndex, out ColumnIndex);
+
+        if (RowIndex < 0 || RowIndex >= WIDTH || ColumnIndex < 0 || ColumnIndex >= HEIGH)
+        {
+            return true;
+        }
+
+        mapData[ColumnIndex, RowIndex] -= (int)TargetTileState;
+
+        return false;
+    }
+
+    public static bool SetMapObjects(int RowIndex, int ColumnIndex, Object TargetObject)
+    {
+        if (RowIndex < 0 || RowIndex >= WIDTH || ColumnIndex < 0 || ColumnIndex >= HEIGH)
+        {
+            return true;
+        }
         int index = ConvertIndexTo1D(RowIndex, ColumnIndex);
         MapObjects[index] = TargetObject;
+
+        return false;
     }
 
     public static Object GetMapObjects(int RowIndex, int ColumnIndex)
@@ -120,8 +170,13 @@ public static class MapManager {
     {
         int RowIndex;
         int ColumnIndex;
-
         ConvertPositionToIndexs(TargetPosition, out RowIndex, out ColumnIndex);
+
+
+        if (RowIndex < 0 || RowIndex >= WIDTH || ColumnIndex < 0 || ColumnIndex >= HEIGH)
+        {
+            return eTileState.None;
+        }
 
         return mapData[ColumnIndex, RowIndex];
     }
@@ -133,11 +188,21 @@ public static class MapManager {
 
         ConvertIndexTo2D(Index1D, out RowIndex, out ColumnIndex);
 
+        if (RowIndex < 0 || RowIndex >= WIDTH || ColumnIndex < 0 || ColumnIndex >= HEIGH)
+        {
+            return eTileState.None;
+        }
+
         return mapData[ColumnIndex, RowIndex];
     }
 
     public static eTileState GetTileState(int RowIndex, int ColumnIndex)
-    { 
+    {
+        if (RowIndex < 0 || RowIndex >= WIDTH || ColumnIndex < 0 || ColumnIndex >= HEIGH)
+        {
+            return eTileState.None;
+        }
+
         return mapData[ColumnIndex, RowIndex];
     }
 
@@ -147,7 +212,7 @@ public static class MapManager {
         {
             for (int j = -Distance; j < Distance + 1; j++)
             {
-                if (ColumnIndex + i > 0 && ColumnIndex + i < HEIGH && RowIndex + j > 0 && RowIndex + j < WIDTH)
+                if (ColumnIndex + i >= 0 && ColumnIndex + i < HEIGH && RowIndex + j >= 0 && RowIndex + j < WIDTH)
                 {
                     if(mapData[ColumnIndex + i, RowIndex + j] == TargetTileState)
                     {

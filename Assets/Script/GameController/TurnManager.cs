@@ -9,6 +9,19 @@ public class TurnManager : MonoBehaviour
     private List<EnemyClass> Enemys;
     private int AmountOfEnemy, EnemyTurnEndNumber;
 
+    private VoidCallBack playerUpdateLogicAndCount;
+    public VoidCallBack PlayerUpdateLogicAndCount
+    {
+        get
+        {
+            return playerUpdateLogicAndCount;
+        }
+        set
+        {
+            playerUpdateLogicAndCount = value;
+        }
+    }
+
     void Awake()
     {
         if (Instance == null)
@@ -27,14 +40,39 @@ public class TurnManager : MonoBehaviour
 
     public void PlayerTurnStart()
     {
-        TouchManager.Instance.enabled = true;
-        PlayerManager.Instance.SetMovableTile();
-
-        for (int i = 0; i < Enemys.Count; i++)
+        if (PlayerUpdateLogicAndCount != null)
         {
-            Enemys[i].GetComponent<EnemyStateMachine>().enabled = false;
+            PlayerUpdateLogicAndCount();
+        }
+        TouchManager.Instance.NowMode = eTouchMode.GamePlay;
+    }
+
+    public void PlayerTurnEnd()
+    {
+        if (AmountOfEnemy == 0)
+        {
+            PlayerTurnStart();
+        }
+        EnemyTurnEndNumber = 0;
+        Enemys[0].GetComponent<EnemyClass>().RunState();
+    }
+
+
+    public void EnemyTurnEnd()
+    {
+        EnemyTurnEndNumber++;
+
+        if(AmountOfEnemy == EnemyTurnEndNumber)
+        {
+            PlayerTurnStart();
+        }
+        else
+        {
+            Enemys[EnemyTurnEndNumber].GetComponent<EnemyClass>().RunState();
         }
     }
+
+
 
     public void SetEnemyList(EnemyClass TargetEnemy)
     {
@@ -47,31 +85,8 @@ public class TurnManager : MonoBehaviour
         if(!Enemys.Remove(TargetEnemy))
         {
             Debug.Log("Error Can't Remove EnemyClass!!");
+            return;
         }
         AmountOfEnemy--;
     }
-
-    public void PlayerTurnEnd()
-    {
-        if(AmountOfEnemy == 0)
-        {
-            PlayerTurnStart();
-        }
-
-        for (int i = 0; i < Enemys.Count; i++)
-        {
-            Enemys[i].GetComponent<EnemyStateMachine>().RunState();
-        }
-    }
-
-    public void EnemyTurnEnd()
-    {
-        EnemyTurnEndNumber++;
-        if (AmountOfEnemy == EnemyTurnEndNumber)
-        {
-            EnemyTurnEndNumber = 0;
-            PlayerTurnStart();
-        }
-    }
-
 }

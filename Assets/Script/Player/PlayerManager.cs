@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : CharaterClass
 {
     public static PlayerManager Instance;
 
@@ -10,7 +10,7 @@ public class PlayerManager : MonoBehaviour
     {
         get
         {
-            return xPos;
+            return localXPos;
         }
     }
 
@@ -18,7 +18,7 @@ public class PlayerManager : MonoBehaviour
     {
         get
         {
-            return yPos;
+            return localYPos;
         }
     }
     
@@ -31,45 +31,21 @@ public class PlayerManager : MonoBehaviour
         set
         {
             healthPoint = value;
-            UIController.Instance.SetHP(MaxHealthPoint, value);
+            PlayerStatusUIManager.Instance.SetHP(MaxHealthPoint, value);
             if (healthPoint <= 0)
             {
                 Anim.SetBool(AnimatorHashKeys.Instance.AnimIsDeadHash, true);
                 TurnManager.Instance.enabled = false;
             }
-                
+            else if(healthPoint > MaxHealthPoint)
+            {
+                healthPoint = MaxHealthPoint;
+            }
         }
     }
 
-    public int AttackPoint
-    {
-        get { return attackPoint; }
 
-        set
-        {
-            attackPoint = value;
-        }
-    }
-
-    public float AttackRange
-    {
-        get { return attackRange; }
-
-        set
-        {
-            attackRange = value;
-        }
-    }
-
-    private int MaxHealthPoint;
-    private int xPos, yPos;
-    private float attackRange;
-    private int healthPoint, attackPoint;
-
-    [SerializeField]
-    private Animator Anim;
-
-    private void Awake()
+    protected override void Awake()
     {
         if (Instance == null)
         {
@@ -78,8 +54,8 @@ public class PlayerManager : MonoBehaviour
             int y;
 
             MapManager.ConvertPositionToIndexs(transform.position, out x, out y);
-
             SetPositionData(x, y);
+            base.Awake();
         }
         else
         {
@@ -89,77 +65,69 @@ public class PlayerManager : MonoBehaviour
             }
         }
     }
+
+    private int MaxHealthPoint;
+
     void Start()
     {
         MaxHealthPoint = 100;
         healthPoint = 100;
         attackPoint = 1000;
-        attackRange = 0.25f;
-
+        ShadowCaster.ShadowCast(localXPos, localYPos, 8);
+        TurnManager.Instance.PlayerUpdateLogicAndCount += UpdatePlayerLogic;
     }
 
-    public IEnumerator MovePosition(int TargetXPos, int TargetYPos)
+    private void UpdatePlayerLogic()
     {
-        Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, true);
+        CountTurn();
+        SetMovableTile();
+        PlayBuffs();
+    }
 
-        Vector3 TargetPosition = MapManager.ConvertIndexsToPosition(TargetXPos, TargetYPos);
-        Vector3 MovePointPerSecond = (TargetPosition - transform.position) / 15;
+    public void PlayerMove(int TargetXPos, int TargetYPos)
+    {
         RemoveMovalbeTile();
-        ChangeDirection(TargetXPos);
-
         SetPositionData(TargetXPos, TargetYPos);
-        while (transform.position != TargetPosition)
-        {
-            transform.position += MovePointPerSecond;
-            yield return null;
-        }
+        ChangeDirection(TargetXPos);
+        ShadowCaster.ShadowCast(localXPos, localYPos, 8);
 
-        Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, false);
-        TurnManager.Instance.PlayerTurnEnd();
+        StartCoroutine(MovePosition(TargetXPos, TargetYPos));
     }
 
     public void PlayerAttack(EnemyClass Target)
     {
         ChangeDirection(Target.EnemyXPos);
-        Target.Hp -= AttackPoint;
+        Target.HealthPoint -= attackPoint;
         Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, true);
     }
 
-    public void EndPlayerAttack()
+    protected override IEnumerator MovePosition(int TargetXPos, int TargetYPos)
     {
-        Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, false);
-        SetMovableTile();
+        yield return base.MovePosition(TargetXPos, TargetYPos);
         TurnManager.Instance.PlayerTurnEnd();
     }
 
-    private void SetPositionData(int NewXPos, int NewYPos)
+    protected override void SetPositionData(int NewXPos, int NewYPos)
     {
-        xPos = NewXPos;
-        yPos = NewYPos;
-        MapManager.SetTileState(xPos,yPos, eTileState.Player);
+        Debug.Log(MapManager.RemoveTileState(localXPos, localYPos, eTileState.Player));//Before move
+        base.SetPositionData(NewXPos,NewYPos);
+        Debug.Log(MapManager.AddTileState(localXPos, localYPos, eTileState.Player));
     }
 
-    private void ChangeDirection(float LocalXPos)
-    {
-        transform.rotation = Quaternion.Euler(0,
-            LocalXPos - xPos < 0 ?
-                                                180 : 0,
-                                              0);
-    }
-
-    public void SetMovableTile()
+    private void SetMovableTile()
     {
         for(int i = -1; i < 2; i++)
         {
             for(int j = -1; j< 2; j++)
             {
-                int targetX = xPos + i;
-                int targetY = yPos+ j;
-                if (targetX > 0 && targetY > 0 && targetX < MapManager.WIDTH && targetY < MapManager.HEIGH)
+                int targetX = localXPos + i;
+                int targetY = localYPos + j;
+                eTileState TargetTile = MapManager.GetTileState(targetX, targetY);
+                if (TargetTile != eTileState.None)
                 {
-                    if (MapManager.GetTileState(targetX, targetY) == eTileState.BasicTile)
+                    if ((TargetTile & eTileState.BasicTile) == eTileState.BasicTile)
                     {
-                        MapManager.SetTileState(targetX, targetY, eTileState.Movable);
+                        MapManager.AddTileState(targetX, targetY, eTileState.Movable);
                     }
                 }
             }
@@ -168,22 +136,27 @@ public class PlayerManager : MonoBehaviour
 
     private void RemoveMovalbeTile()
     {
-        MapManager.SetTileState(xPos, yPos, eTileState.BasicTile);
         for (int i = -1; i < 2; i++)
         {
             for (int j = -1; j < 2; j++)
             {
-                int targetX = xPos + i;
-                int targetY = yPos + j;
+                int targetX = localXPos + i;
+                int targetY = localYPos + j;
 
-                if (targetX > 0 && targetY > 0 && targetX < MapManager.WIDTH && targetY < MapManager.HEIGH)
+                eTileState TargetTile = MapManager.GetTileState(targetX, targetY);
+                if (TargetTile != eTileState.None)
                 {
-                    if (MapManager.GetTileState(targetX, targetY) == eTileState.Movable)
+                    if ((TargetTile & eTileState.Movable) == eTileState.Movable)
                     {
-                        MapManager.SetTileState(targetX, targetY, eTileState.BasicTile);
+                        MapManager.RemoveTileState(targetX, targetY, eTileState.Movable);
                     }
                 }
             }
         }
+    }
+
+    private void AfterAttack_AnimEvent()
+    {
+        TurnManager.Instance.PlayerTurnEnd();
     }
 }

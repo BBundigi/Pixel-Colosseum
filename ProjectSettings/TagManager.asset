@@ -12,6 +12,7 @@ TagManager:
   - ShadowParent
   - Bumper
   - Tiles
+  - Inventory
   layers:
   - Default
   - TransparentFX
