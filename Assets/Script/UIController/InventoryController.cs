@@ -64,7 +64,7 @@ public class InventoryController : MonoBehaviour {
     {
         for(int i =0; i < InventoryItemIDs.Count; i++)
         {
-            Slots[i].SetSprite(InventoryItemIDs[i]);
+            Slots[i].SetSlot(InventoryItemIDs[i],i);
         }
     }
 }

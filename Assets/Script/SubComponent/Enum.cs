@@ -9,9 +9,6 @@ public static class EnumManager
         //return Array that Contain value of constance enum
         int random = UnityEngine.Random.Range(0, values.Length);
         return (T)values.GetValue(random);
-
-        //나는 아직 제너릭을 쓰기엔 부족한거같다
-        //좀더 예제를 찾아보도록 하자
     }
 
     public static void ConvertItemIDToTileState(eItemID TargetItem)
@@ -35,6 +32,7 @@ public enum eTileState
 
 public enum eBuffType
 {
+    None = 0,
     OnFire = 1,
     OnPoison = 2,
 }
@@ -52,7 +50,7 @@ public enum eTouchMode
 public enum eChooseItemMode
 {
     RandomPotion,
-    RandomStatus,
+    //RandomStatus,
 }
 
 public enum eStatus
@@ -66,6 +64,12 @@ public enum eItemID
     MirrorScroll = 40,
     FireFlask = 57,
     PoisonFlask = 59,
+}
+
+public enum eItemType
+{
+    Potion,
+    Scroll,
 }
 
 public enum eEnemyState

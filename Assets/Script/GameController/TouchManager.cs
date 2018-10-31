@@ -92,8 +92,19 @@ public class TouchManager : MonoBehaviour
         MainCamera = Camera.main;
     }
 
-    //void Update()
-    //{
+    void Update()
+    {
+
+        if(Input.GetMouseButtonDown(1))
+        {
+            int x;
+            int y;
+
+            Vector3 MousePosition = MainCamera.ScreenToWorldPoint(Input.mousePosition);
+
+            ConvertTouchPositionToIndexs(MousePosition, out x, out y);
+            Debug.Log(MapManager.GetTileState(x, y));
+        }
     //    if (Input.touchCount == 1)
     //    {
 
@@ -164,7 +175,7 @@ public class TouchManager : MonoBehaviour
     //            MainCamera.orthographicSize += deltaTouchesMag * ZoomSpeed;
     //        }
     //    }
-    //}
+    }
 
     private void OnGUI()
     {
@@ -214,9 +225,11 @@ public class TouchManager : MonoBehaviour
         if (m_Event.type == EventType.MouseDrag)
         {
             isDrag = true;
-            Vector2 deltaMousePos = m_Event.delta;
 
-            MainCamera.transform.position -= (Vector3)deltaMousePos * CameraMoveSpeed;
+            Vector2 MouseMovePositoin = m_Event.delta;
+
+            MouseMovePositoin = new Vector2(-MouseMovePositoin.x, MouseMovePositoin.y);
+            MainCamera.transform.position += (Vector3)MouseMovePositoin * CameraMoveSpeed;
         }
 
         if (m_Event.type == EventType.MouseUp)
@@ -228,7 +241,6 @@ public class TouchManager : MonoBehaviour
                 int y;
                 ConvertTouchPositionToIndexs(WorldPosition, out x, out y);
                 eTileState tileState = MapManager.GetTileState(x, y);
-
                 if (tileState != eTileState.None)
                 {
                     if ((tileState & eTileState.Enemy) == eTileState.Enemy)
@@ -236,17 +248,20 @@ public class TouchManager : MonoBehaviour
                         PlayerManager.Instance.PlayerAttack((EnemyClass)MapManager.GetMapObjects(x, y));
                         NowMode = eTouchMode.None;
                     }
-                    else if ((tileState & eTileState.Movable) == eTileState.Movable)
+
+                    if((tileState & eTileState.Movable) == eTileState.Movable)
                     {
                         PlayerManager.Instance.PlayerMove(x, y);
                         NowMode = eTouchMode.None;
                     }
                 }
             }
-            isDrag = false;
+            else
+            {
+                isDrag = false;
+            }
         }
     }
-
     private void TouchInThrowItem()
     {
         Event m_Event = Event.current;
@@ -254,9 +269,10 @@ public class TouchManager : MonoBehaviour
         if (m_Event.type == EventType.MouseDrag)
         {
             isDrag = true;
-            Vector2 deltaMousePos = m_Event.delta;
+            Vector2 MouseMovePositoin = m_Event.delta;
 
-            MainCamera.transform.position -= (Vector3)deltaMousePos * CameraMoveSpeed;
+            MouseMovePositoin = new Vector2(-MouseMovePositoin.x, MouseMovePositoin.y);
+            MainCamera.transform.position += (Vector3)MouseMovePositoin * CameraMoveSpeed;
         }
 
         if (m_Event.type == EventType.MouseUp)
@@ -275,9 +291,13 @@ public class TouchManager : MonoBehaviour
                     nowMode = eTouchMode.None;
                 }
             }
-            isDrag = false;
+            else
+            {
+                isDrag = false;
+            }
         }
     }
+
 
     private void ConvertTouchPositionToIndexs(Vector2 TargetVector, out int x, out int y)
     {

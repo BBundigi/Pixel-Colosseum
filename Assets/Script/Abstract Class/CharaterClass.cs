@@ -7,32 +7,36 @@ public abstract class CharaterClass : MonoBehaviour {
     protected eBuffType Buffs; //Include deBuff^^
     protected List<int> Counts;
     protected List<eBuffType> BuffList;//Use this for RemoveBuff Or RenewBuff with CountList
-    protected Dictionary<string, float> AnimationLengthDic;
 
+    public abstract  int HealthPoint
+    {
+        get;set;
+    }
     [SerializeField]
     protected Animator Anim;
 
     protected virtual void Awake()
     {
-        AnimationLengthDic = new Dictionary<string, float>();
-        AnimationClip[] Clips = Anim.runtimeAnimatorController.animationClips;
+        int m_StartXPos;
+        int m_StartYPos;
 
-        for (int i = 0; i < Clips.Length; i++)
-        {
-            AnimationLengthDic.Add(Clips[i].name, Clips[i].length);
-        }
+        MapManager.ConvertPositionToIndexs(transform.position, out m_StartXPos, out m_StartYPos);
+
+        localXPos = m_StartXPos;
+        localYPos = m_StartYPos;
+
         Counts = new List<int>();
         BuffList = new List<eBuffType>();
     }
+
     protected void SetBuffs()
     {
         eTileState TileStateUnderCharacter = MapManager.GetTileState(localXPos, localYPos);
-
         if ((TileStateUnderCharacter & eTileState.OnFire) == eTileState.OnFire)
         {
-            Buffs += (int)eBuffType.OnFire;
             if (!BuffList.Contains(eBuffType.OnFire))
             {
+                Buffs += (int)eBuffType.OnFire;
                 BuffList.Add(eBuffType.OnFire);
                 Counts.Add(4);
             }
@@ -44,12 +48,11 @@ public abstract class CharaterClass : MonoBehaviour {
 
         if ((TileStateUnderCharacter & eTileState.OnPoison) == eTileState.OnPoison)
         {
-            Buffs += (int)eBuffType.OnPoison;
-
             if (!BuffList.Contains(eBuffType.OnPoison))
             {
+                Buffs += (int)eBuffType.OnPoison;
                 BuffList.Add(eBuffType.OnPoison);
-                Counts.Add(1);
+                Counts.Add(2);
             }
             else
             {
@@ -60,16 +63,16 @@ public abstract class CharaterClass : MonoBehaviour {
 
     protected void PlayBuffs()
     {
+        Debug.Log(Buffs);
         if ((Buffs & eBuffType.OnFire) == eBuffType.OnFire)
         {
-            //PlayeEffect
-            healthPoint -= 4;
+            HealthPoint -= 4;
         }
 
         if ((Buffs & eBuffType.OnPoison) == eBuffType.OnPoison)
         {
             //PlayEffect
-            healthPoint -= 3;
+            HealthPoint -= 3;
         }
     }
 
@@ -80,7 +83,7 @@ public abstract class CharaterClass : MonoBehaviour {
             Counts[i]--;
             if (Counts[i] == 0)
             {
-                Buffs -= BuffList[i];
+                Buffs -= (int)BuffList[i];
                 Counts.RemoveAt(i);
                 BuffList.RemoveAt(i);
             }
@@ -89,7 +92,7 @@ public abstract class CharaterClass : MonoBehaviour {
 
     protected virtual IEnumerator MovePosition(int TargetXPos, int TargetYPos)
     {
-        Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, true);
+        Anim.SetBool(AnimatorHashKeys.AnimIsMoveHash, true);
 
         Vector3 TargetPosition = MapManager.ConvertIndexsToPosition(TargetXPos, TargetYPos);
         Vector3 MovePointPerSecond = (TargetPosition - transform.position) / 16;
@@ -100,14 +103,13 @@ public abstract class CharaterClass : MonoBehaviour {
             yield return null;
         }
 
-        Anim.SetBool(AnimatorHashKeys.Instance.AnimIsMoveHash, false);
+        Anim.SetBool(AnimatorHashKeys.AnimIsMoveHash, false);
     }
 
     protected virtual void SetPositionData(int NewEnemyXPos, int NewlocalYPos)
     {
         localXPos = NewEnemyXPos;
         localYPos = NewlocalYPos;
-        SetBuffs();
     }
 
     protected virtual void ChangeDirection(int LocalTargetXPos)

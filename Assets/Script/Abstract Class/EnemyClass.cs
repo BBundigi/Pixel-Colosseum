@@ -30,13 +30,12 @@ public abstract class EnemyClass : CharaterClass
         }
     }
 
-    public int HealthPoint
+    public override int HealthPoint
     {
         get
         {
             return healthPoint;
         }
-
         set
         {
             healthPoint = value;
@@ -48,6 +47,7 @@ public abstract class EnemyClass : CharaterClass
     private Vector2[][] defaultDestination;
 
     private int DDPivot;//Default Destination Pivot
+
 
     protected virtual void Start()
     {
@@ -85,7 +85,6 @@ public abstract class EnemyClass : CharaterClass
     {
         int[] TargetPositions = FindMovePosition();
         SetPositionData(TargetPositions[0], TargetPositions[1]);
-
         StartCoroutine(MovePosition(TargetPositions[0], TargetPositions[1]));
     }
 
@@ -104,7 +103,6 @@ public abstract class EnemyClass : CharaterClass
 
         MapManager.AddTileState(localXPos, localYPos, eTileState.Enemy);//after move
         MapManager.SetMapObjects(localXPos, localYPos,this);
-        SetBuffs();
     }
     protected override IEnumerator MovePosition(int TargetXPos, int TargetYPos)
     {
@@ -114,6 +112,7 @@ public abstract class EnemyClass : CharaterClass
 
     private void AfterAttack_AnimEvent()
     {
+        Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, false);
         TurnManager.Instance.EnemyTurnEnd();
     }
 

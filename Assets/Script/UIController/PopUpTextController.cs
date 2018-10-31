@@ -24,9 +24,8 @@ public class PopUpTextController : MonoBehaviour {
     private GameObject StopThrowing;
 
 
-
+    private eItemID  TargetObject;
     private GameObject NowButton;
-    private eItemID Object;
 
     private void Awake()
     {
@@ -43,22 +42,23 @@ public class PopUpTextController : MonoBehaviour {
         }
     }
 
-    public void PopUpItemExplanaition(eItemID Item)
+    public void PopUpItemExplanaition(eItemID ID)
     {
         ExplanationPanel.SetActive(true);
 
-        Title.text = ItemDatas.ItemNameDic[Item];
-        Explanation.text = ItemDatas.ItemExplanationDic[Item];
-        Mainsprite.sprite = ItemDatas.ItemSprites[(int)Item];
+        ItemInfo m_TargetItem = ItemInfoManager.Instance.GetItemInfo(ID);
+
+        Title.text = m_TargetItem.ItemName;
+        Explanation.text = m_TargetItem.ItemExplanation;
+        Mainsprite.sprite = ItemInfoManager.Instance.GetItemSprite(ID);
 
         NowButton = PotionItemButtons;
-        Object = Item;
         PotionItemButtons.SetActive(true);
     }
 
     public void ThrowButton_OnClicked()
     {
-        TouchManager.Instance.TargetItem = Object;
+        TouchManager.Instance.TargetItem = TargetObject;
         NowButton.SetActive(false);
         NowButton = null;
         ExplanationPanel.SetActive(false);

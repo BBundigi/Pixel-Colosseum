@@ -56,17 +56,17 @@ public class ChooseItemButtonManager: MonoBehaviour {
             {
                 case eChooseItemMode.RandomPotion:
                     {
-                        Sprite tempSprite = ItemDatas.ItemSprites[(int)ItemDatas.GetRandomPotionID()];
+                        Sprite tempSprite = ItemInfoManager.Instance.GetItemSprite(ItemInfoManager.Instance.GetRandomPotionID());
                         m_buttonFunction += Func_RandomPotion;
                         m_buttonFunction += CloseButtons;
                         
                         ChoosItemButtons[i].SettingButtons(tempSprite,GetRandomPotionText, m_buttonFunction);
                         break;
                     }
-                case eChooseItemMode.RandomStatus:
-                    {
-                        break;
-                    }
+                //case eChooseItemMode.RandomStatus:
+                //    {
+                //        break;
+                //    }
             }
         }
     }    
@@ -79,7 +79,7 @@ public class ChooseItemButtonManager: MonoBehaviour {
     {
         for (int i = 0; i < 3; i++)
         {
-            eItemID random = ItemDatas.GetRandomPotionID();
+            eItemID random = ItemInfoManager.Instance.GetRandomPotionID();
             InventoryController.Instance.SetInventoryList(random);
         }
         TurnManager.Instance.PlayerTurnStart();

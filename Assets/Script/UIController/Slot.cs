@@ -4,34 +4,41 @@ using UnityEngine;
 using UnityEngine.UI;
 public class Slot : MonoBehaviour {
 
-    private Image inventoryImage;
+    private int IndexNumber;
+    private Image InventoryImage;
     private Button button;
-    private eItemID SettedItem;
+    private eItemID SettedItemID;
 
     private void Awake()
     {
-        inventoryImage = GetComponentInChildren<Image>(true);
+        InventoryImage = GetComponentInChildren<Image>(true);
         button = GetComponent<Button>();
         button.enabled = false;
-        inventoryImage.color = Color.clear;
+        InventoryImage.color = Color.clear;
     }
 
-    public void SetSprite(eItemID item)
+    public void SetSlot(eItemID ID,int SlotIndex)
     {
-        inventoryImage.color = Color.white;
-        inventoryImage.sprite = ItemDatas.ItemSprites[(int)item];
-        SettedItem = item;
+        InventoryImage.color = Color.white;
+        InventoryImage.sprite = ItemInfoManager.Instance.GetItemSprite(ID);
+        SettedItemID = ID;
         button.enabled = true;
+        IndexNumber = SlotIndex;
     }
 
-    public void RemoveSprite()
+    public void RemoveSlot()
     {
-        inventoryImage.color = Color.clear;
+        InventoryImage.color = Color.clear;
         button.enabled = false;
+    }
+
+    public void RemoveUsedItem()
+    {
+
     }
 
     public void ShowExplanation_OnClicked()
     {
-        PopUpTextController.Instance.PopUpItemExplanaition(SettedItem);
+        PopUpTextController.Instance.PopUpItemExplanaition(SettedItemID);
     }
 }

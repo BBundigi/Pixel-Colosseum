@@ -32,9 +32,8 @@ public class FlaskManager : MonoBehaviour {
         TurnManager.Instance.PlayerUpdateLogicAndCount += TempCounter;
 
         PotionID = _PotionID;
-        MainSprite.sprite = ItemDatas.ItemSprites[(int)PotionID];
+        MainSprite.sprite = ItemInfoManager.Instance.GetItemSprite((PotionID));
         StartCoroutine(ThrowFlask());
-        UseAbillity();
     }
 
     private void UseAbillity()
@@ -47,13 +46,16 @@ public class FlaskManager : MonoBehaviour {
                     {
                         for (int i =  -2; i < 3; i++)
                         {
-                            for (int j = 2; j < 3; j++)
+                            for (int j = -2; j < 3; j++)
                             {
-                                if (DestinationY + i > 0 && DestinationY + i < MapManager.HEIGH && DestinationX + j > 0 && DestinationX + j < MapManager.WIDTH)
+                                eTileState TargetTileState = MapManager.GetTileState(DestinationX + i, DestinationY + j);
+
+                                if (TargetTileState != eTileState.None)
                                 {
-                                    if ((MapManager.GetTileState(DestinationX +i, DestinationY +j) & eTileState.Wall) != eTileState.Wall)
+                                    if ((TargetTileState & eTileState.Wall) != eTileState.Wall)
                                     {
-                                        MapManager.AddTileState(DestinationX + i, DestinationY+ j, eTileState.OnFire);
+                                        MapManager.AddTileState(DestinationX + i, DestinationY + j, eTileState.OnFire);
+
                                     }
                                 }
                             }
@@ -106,6 +108,8 @@ public class FlaskManager : MonoBehaviour {
             transform.position += m_MovePerSecond;
             yield return null;
         }
+        UseAbillity();
+        TurnManager.Instance.PlayerTurnEnd();
         transform.position = m_TargetPosition;
         MainSprite.color = Color.clear;
     }

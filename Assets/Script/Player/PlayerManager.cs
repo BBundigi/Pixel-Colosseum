@@ -22,7 +22,7 @@ public class PlayerManager : CharaterClass
         }
     }
     
-    public int HealthPoint
+    public override int HealthPoint
     {
         get
         {
@@ -34,7 +34,7 @@ public class PlayerManager : CharaterClass
             PlayerStatusUIManager.Instance.SetHP(MaxHealthPoint, value);
             if (healthPoint <= 0)
             {
-                Anim.SetBool(AnimatorHashKeys.Instance.AnimIsDeadHash, true);
+                Anim.SetBool(AnimatorHashKeys.AnimIsDeadHash, true);
                 TurnManager.Instance.enabled = false;
             }
             else if(healthPoint > MaxHealthPoint)
@@ -79,16 +79,18 @@ public class PlayerManager : CharaterClass
 
     private void UpdatePlayerLogic()
     {
+        SetBuffs();
+        PlayBuffs();
         CountTurn();
         SetMovableTile();
-        PlayBuffs();
     }
 
     public void PlayerMove(int TargetXPos, int TargetYPos)
     {
         RemoveMovalbeTile();
-        SetPositionData(TargetXPos, TargetYPos);
         ChangeDirection(TargetXPos);
+        SetPositionData(TargetXPos, TargetYPos);
+        SetMovableTile();
         ShadowCaster.ShadowCast(localXPos, localYPos, 8);
 
         StartCoroutine(MovePosition(TargetXPos, TargetYPos));
@@ -98,7 +100,7 @@ public class PlayerManager : CharaterClass
     {
         ChangeDirection(Target.EnemyXPos);
         Target.HealthPoint -= attackPoint;
-        Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, true);
+        Anim.SetBool(AnimatorHashKeys.AnimIsAttackHash, true);
     }
 
     protected override IEnumerator MovePosition(int TargetXPos, int TargetYPos)
@@ -109,9 +111,9 @@ public class PlayerManager : CharaterClass
 
     protected override void SetPositionData(int NewXPos, int NewYPos)
     {
-        Debug.Log(MapManager.RemoveTileState(localXPos, localYPos, eTileState.Player));//Before move
+        MapManager.RemoveTileState(localXPos, localYPos, eTileState.Player);//Before move
         base.SetPositionData(NewXPos,NewYPos);
-        Debug.Log(MapManager.AddTileState(localXPos, localYPos, eTileState.Player));
+        MapManager.AddTileState(localXPos, localYPos, eTileState.Player);
     }
 
     private void SetMovableTile()
@@ -157,6 +159,7 @@ public class PlayerManager : CharaterClass
 
     private void AfterAttack_AnimEvent()
     {
+        Anim.SetBool(AnimatorHashKeys.AnimIsAttackHash, false);
         TurnManager.Instance.PlayerTurnEnd();
     }
 }

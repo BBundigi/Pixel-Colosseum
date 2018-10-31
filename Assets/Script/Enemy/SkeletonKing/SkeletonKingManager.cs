@@ -10,6 +10,7 @@ public class SkeletonKingManager : EnemyClass {
 
     protected override eEnemyState ChooseNextState()
     {
+        SetBuffs();
         PlayBuffs();
         if (MapManager.CheckTileState(1, eTileState.Player, localXPos, localYPos))
         {
