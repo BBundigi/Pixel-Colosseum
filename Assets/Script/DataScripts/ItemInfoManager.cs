@@ -5,7 +5,7 @@ using UnityEngine;
 public class ItemInfoManager : InformationLoader
 {
     public static ItemInfoManager Instance;
-    private Dictionary<eItemID, ItemInfo> ItemInfoDic;
+    private Dictionary<eItemID,ItemInfo> ItemInfoDic;
     private Dictionary<eItemID, Sprite> ItemSpriteDic;
 
     private eItemID[] PotionIDs = new eItemID[2]
@@ -41,20 +41,22 @@ public class ItemInfoManager : InformationLoader
 
     private void Awake()
     {
-        ItemInfo[] ItemInfoArr;
+        ItemInfo[] tempItemInfoArr;
+        Load(out tempItemInfoArr, "JsonFiles/ItemInfos");
 
-        Load(out ItemInfoArr, "JsonFiles/ItemInfos");
-
-        for(int i =0; i < ItemInfoArr.Length; i++)
-        {
-            ItemInfoDic.Add(ItemInfoArr[i].ItemID, ItemInfoArr[i]);
-        }
+        ItemSpriteDic = new Dictionary<eItemID, Sprite>();
+        ItemInfoDic = new Dictionary<eItemID, ItemInfo>();
 
         Sprite[] ItemSprites = Resources.LoadAll<Sprite>("Sprites/Item&Icon/items");
 
         for(int i = 0; i< ItemSprites.Length; i++)
         {
             ItemSpriteDic.Add((eItemID)i, ItemSprites[i]);
+        }
+
+        for(int i =0; i < tempItemInfoArr.Length; i++)
+        {
+            ItemInfoDic.Add(tempItemInfoArr[i].ItemID, tempItemInfoArr[i]);
         }
 
         if(Instance == null)

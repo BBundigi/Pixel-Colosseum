@@ -48,13 +48,13 @@ public class FlaskManager : MonoBehaviour {
                         {
                             for (int j = -2; j < 3; j++)
                             {
-                                eTileState TargetTileState = MapManager.GetTileState(DestinationX + i, DestinationY + j);
+                                eTileState TargetTileState = MapManager.Instance.GetTileState(DestinationX + i, DestinationY + j);
 
                                 if (TargetTileState != eTileState.None)
                                 {
                                     if ((TargetTileState & eTileState.Wall) != eTileState.Wall)
                                     {
-                                        MapManager.AddTileState(DestinationX + i, DestinationY + j, eTileState.OnFire);
+                                        MapManager.Instance.AddTileState(DestinationX + i, DestinationY + j, eTileState.OnFire);
 
                                     }
                                 }
@@ -67,9 +67,9 @@ public class FlaskManager : MonoBehaviour {
                         {
                             for (int j = DestinationY - 2; j < DestinationY + 3; j++)
                             {
-                                if ((MapManager.GetTileState(DestinationX + i, DestinationY +j) & eTileState.OnFire) == eTileState.OnFire)
+                                if ((MapManager.Instance.GetTileState(DestinationX + i, DestinationY +j) & eTileState.OnFire) == eTileState.OnFire)
                                 {
-                                    MapManager.RemoveTileState(DestinationX + i, DestinationY + j, eTileState.OnFire);
+                                    MapManager.Instance.RemoveTileState(DestinationX + i, DestinationY + j, eTileState.OnFire);
                                 }
                             }
                         }
@@ -97,9 +97,9 @@ public class FlaskManager : MonoBehaviour {
 
     private IEnumerator ThrowFlask()
     {
-        transform.position = MapManager.ConvertIndexsToPosition(PlayerManager.Instance.PlayerXPos, PlayerManager.Instance.PlayerYPos);
+        transform.position = MapManager.Instance.ConvertIndexsToPosition(PlayerManager.Instance.PlayerXPos, PlayerManager.Instance.PlayerYPos);
 
-        Vector3 m_TargetPosition = (Vector3)MapManager.ConvertIndexsToPosition(DestinationX, DestinationY);
+        Vector3 m_TargetPosition = (Vector3)MapManager.Instance.ConvertIndexsToPosition(DestinationX, DestinationY);
 
         Vector3 m_MovePerSecond = (m_TargetPosition - transform.position) / 20;
         while (Mathf.Round(10 *(transform.position - m_TargetPosition).magnitude) != 0)
@@ -121,7 +121,7 @@ public class FlaskManager : MonoBehaviour {
             int LocEnemyXPos = Distance - i + DestinationX;
             int LoclocalYPos = i+ DestinationY;
 
-            MapManager.AddTileState(LocEnemyXPos, LoclocalYPos, TargetTileState);
+            MapManager.Instance.AddTileState(LocEnemyXPos, LoclocalYPos, TargetTileState);
 
             if(LocEnemyXPos == 0 && LoclocalYPos == 0)
             {
@@ -129,17 +129,17 @@ public class FlaskManager : MonoBehaviour {
             }
             else if(LocEnemyXPos == 0)
             {
-                MapManager.AddTileState(LocEnemyXPos, -LoclocalYPos, TargetTileState);
+                MapManager.Instance.AddTileState(LocEnemyXPos, -LoclocalYPos, TargetTileState);
             }
             else if (LoclocalYPos == 0)
             {
-                MapManager.AddTileState(-LocEnemyXPos, LoclocalYPos, TargetTileState);
+                MapManager.Instance.AddTileState(-LocEnemyXPos, LoclocalYPos, TargetTileState);
             }
             else
             {
-                MapManager.AddTileState(LocEnemyXPos, -LoclocalYPos, TargetTileState);
-                MapManager.AddTileState(-LocEnemyXPos, LoclocalYPos, TargetTileState);
-                MapManager.AddTileState(-LocEnemyXPos, -LoclocalYPos, TargetTileState);
+                MapManager.Instance.AddTileState(LocEnemyXPos, -LoclocalYPos, TargetTileState);
+                MapManager.Instance.AddTileState(-LocEnemyXPos, LoclocalYPos, TargetTileState);
+                MapManager.Instance.AddTileState(-LocEnemyXPos, -LoclocalYPos, TargetTileState);
             }
         }
     }
@@ -151,7 +151,7 @@ public class FlaskManager : MonoBehaviour {
             int LocEnemyXPos = Distance - i;
             int LoclocalYPos = i;
 
-            MapManager.RemoveTileState(LocEnemyXPos, LoclocalYPos, TargetTileState);
+            MapManager.Instance.RemoveTileState(LocEnemyXPos, LoclocalYPos, TargetTileState);
 
             if (LocEnemyXPos == 0 && LoclocalYPos == 0)
             {
@@ -159,17 +159,17 @@ public class FlaskManager : MonoBehaviour {
             }
             else if (LocEnemyXPos == 0)
             {
-                MapManager.RemoveTileState(LocEnemyXPos, -LoclocalYPos, TargetTileState);
+                MapManager.Instance.RemoveTileState(LocEnemyXPos, -LoclocalYPos, TargetTileState);
             }
             else if (LoclocalYPos == 0)
             {
-                MapManager.RemoveTileState(-LocEnemyXPos, LoclocalYPos, TargetTileState);
+                MapManager.Instance.RemoveTileState(-LocEnemyXPos, LoclocalYPos, TargetTileState);
             }
             else
             {
-                MapManager.RemoveTileState(LocEnemyXPos, -LoclocalYPos, TargetTileState);
-                MapManager.RemoveTileState(-LocEnemyXPos, LoclocalYPos, TargetTileState);
-                MapManager.RemoveTileState(-LocEnemyXPos, -LoclocalYPos, TargetTileState);
+                MapManager.Instance.RemoveTileState(LocEnemyXPos, -LoclocalYPos, TargetTileState);
+                MapManager.Instance.RemoveTileState(-LocEnemyXPos, LoclocalYPos, TargetTileState);
+                MapManager.Instance.RemoveTileState(-LocEnemyXPos, -LoclocalYPos, TargetTileState);
             }
         }
     }

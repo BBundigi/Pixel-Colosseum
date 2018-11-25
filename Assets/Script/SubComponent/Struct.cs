@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class ItemInfo
 {
-    public eItemType ItemType;
     public eItemID ItemID;
 
     public string ItemName;

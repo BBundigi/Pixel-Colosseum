@@ -53,7 +53,7 @@ public class PlayerManager : CharaterClass
             int x;
             int y;
 
-            MapManager.ConvertPositionToIndexs(transform.position, out x, out y);
+            MapManager.Instance.ConvertPositionToIndexs(transform.position, out x, out y);
             SetPositionData(x, y);
             base.Awake();
         }
@@ -111,9 +111,9 @@ public class PlayerManager : CharaterClass
 
     protected override void SetPositionData(int NewXPos, int NewYPos)
     {
-        MapManager.RemoveTileState(localXPos, localYPos, eTileState.Player);//Before move
+        MapManager.Instance.RemoveTileState(localXPos, localYPos, eTileState.Player);//Before move
         base.SetPositionData(NewXPos,NewYPos);
-        MapManager.AddTileState(localXPos, localYPos, eTileState.Player);
+        MapManager.Instance.AddTileState(localXPos, localYPos, eTileState.Player);
     }
 
     private void SetMovableTile()
@@ -124,12 +124,12 @@ public class PlayerManager : CharaterClass
             {
                 int targetX = localXPos + i;
                 int targetY = localYPos + j;
-                eTileState TargetTile = MapManager.GetTileState(targetX, targetY);
+                eTileState TargetTile = MapManager.Instance.GetTileState(targetX, targetY);
                 if (TargetTile != eTileState.None)
                 {
                     if ((TargetTile & eTileState.BasicTile) == eTileState.BasicTile)
                     {
-                        MapManager.AddTileState(targetX, targetY, eTileState.Movable);
+                        MapManager.Instance.AddTileState(targetX, targetY, eTileState.Movable);
                     }
                 }
             }
@@ -145,12 +145,12 @@ public class PlayerManager : CharaterClass
                 int targetX = localXPos + i;
                 int targetY = localYPos + j;
 
-                eTileState TargetTile = MapManager.GetTileState(targetX, targetY);
+                eTileState TargetTile = MapManager.Instance.GetTileState(targetX, targetY);
                 if (TargetTile != eTileState.None)
                 {
                     if ((TargetTile & eTileState.Movable) == eTileState.Movable)
                     {
-                        MapManager.RemoveTileState(targetX, targetY, eTileState.Movable);
+                        MapManager.Instance.RemoveTileState(targetX, targetY, eTileState.Movable);
                     }
                 }
             }

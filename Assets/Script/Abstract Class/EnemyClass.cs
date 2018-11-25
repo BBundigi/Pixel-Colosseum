@@ -57,7 +57,7 @@ public abstract class EnemyClass : CharaterClass
         defaultDestination = MapManager.EnemyDefaultDestination;
 
         int rowIndex, columnIndex;
-        MapManager.ConvertPositionToIndexs(transform.position, out rowIndex, out columnIndex);
+        MapManager.Instance.ConvertPositionToIndexs(transform.position, out rowIndex, out columnIndex);
         TurnManager.Instance.SetEnemyList(this);
         localXPos = rowIndex;
         localYPos = columnIndex;
@@ -91,7 +91,7 @@ public abstract class EnemyClass : CharaterClass
     protected virtual void EnemyAttack()
     {
         PlayerManager.Instance.HealthPoint -= AttackPoint;
-        Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, true);
+        Anim.SetBool(AnimatorHashKeys.AnimIsAttackHash, true);
         ChangeDirection(PlayerManager.Instance.PlayerXPos);
     }
 
@@ -101,8 +101,8 @@ public abstract class EnemyClass : CharaterClass
         
         base.SetPositionData(NewEnemyXPos, NewlocalYPos);
 
-        MapManager.AddTileState(localXPos, localYPos, eTileState.Enemy);//after move
-        MapManager.SetMapObjects(localXPos, localYPos,this);
+        MapManager.Instance.AddTileState(localXPos, localYPos, eTileState.Enemy);//after move
+        MapManager.Instance.SetMapObjects(localXPos, localYPos,this);
     }
     protected override IEnumerator MovePosition(int TargetXPos, int TargetYPos)
     {
@@ -112,7 +112,7 @@ public abstract class EnemyClass : CharaterClass
 
     private void AfterAttack_AnimEvent()
     {
-        Anim.SetBool(AnimatorHashKeys.Instance.AnimIsAttackHash, false);
+        Anim.SetBool(AnimatorHashKeys.AnimIsAttackHash, false);
         TurnManager.Instance.EnemyTurnEnd();
     }
 
@@ -167,9 +167,9 @@ public abstract class EnemyClass : CharaterClass
         {
             returnPositions[0] = localXPos + 1;
             returnPositions[1] = localYPos + 1;
-            if ((MapManager.GetTileState(returnPositions[0], returnPositions[1]) & eTileState.Wall) == eTileState.Wall)
+            if ((MapManager.Instance.GetTileState(returnPositions[0], returnPositions[1]) & eTileState.Wall) == eTileState.Wall)
             {
-                if (MapManager.GetTileState(localXPos + 1, localYPos) != eTileState.Wall)
+                if (MapManager.Instance.GetTileState(localXPos + 1, localYPos) != eTileState.Wall)
                 {
                     returnPositions[0] = localXPos + 1;
                     returnPositions[1] = localYPos;
@@ -185,9 +185,9 @@ public abstract class EnemyClass : CharaterClass
         {
             returnPositions[0] = localXPos + 1;
             returnPositions[1] = localYPos - 1;
-            if ((MapManager.GetTileState(returnPositions[0], returnPositions[1]) & eTileState.Wall) == eTileState.Wall)
+            if ((MapManager.Instance.GetTileState(returnPositions[0], returnPositions[1]) & eTileState.Wall) == eTileState.Wall)
             {
-                if (MapManager.GetTileState(localXPos + 1, localYPos) != eTileState.Wall)
+                if (MapManager.Instance.GetTileState(localXPos + 1, localYPos) != eTileState.Wall)
                 {
                     returnPositions[0] = localXPos + 1;
                     returnPositions[1] = localYPos;
@@ -203,9 +203,9 @@ public abstract class EnemyClass : CharaterClass
         {
             returnPositions[0] = localXPos - 1;
             returnPositions[1] = localYPos + 1;
-            if ((MapManager.GetTileState(returnPositions[0], returnPositions[1]) & eTileState.Wall) == eTileState.Wall)
+            if ((MapManager.Instance.GetTileState(returnPositions[0], returnPositions[1]) & eTileState.Wall) == eTileState.Wall)
             {
-                if (MapManager.GetTileState(localXPos - 1, localYPos) != eTileState.Wall)
+                if (MapManager.Instance.GetTileState(localXPos - 1, localYPos) != eTileState.Wall)
                 {
                     returnPositions[0] = localXPos - 1;
                     returnPositions[1] = localYPos;
@@ -221,9 +221,9 @@ public abstract class EnemyClass : CharaterClass
         {
             returnPositions[0] = localXPos - 1;
             returnPositions[1] = localYPos - 1;
-            if ((MapManager.GetTileState(returnPositions[0], returnPositions[1]) & eTileState.Wall) == eTileState.Wall)
+            if ((MapManager.Instance.GetTileState(returnPositions[0], returnPositions[1]) & eTileState.Wall) == eTileState.Wall)
             {
-                if (MapManager.GetTileState(localXPos - 1, localYPos) != eTileState.Wall)
+                if (MapManager.Instance.GetTileState(localXPos - 1, localYPos) != eTileState.Wall)
                 {
                     returnPositions[0] = localXPos - 1;
                     returnPositions[1] = localYPos;
@@ -245,8 +245,8 @@ public abstract class EnemyClass : CharaterClass
 
     private void RemovePositionData()
     {
-        MapManager.RemoveTileState(localXPos, localYPos, eTileState.Enemy);
-        MapManager.SetMapObjects(localXPos, localYPos, null);
+        MapManager.Instance.RemoveTileState(localXPos, localYPos, eTileState.Enemy);
+        MapManager.Instance.SetMapObjects(localXPos, localYPos, null);
     }
 
     private void SetDDPivot()
@@ -288,12 +288,12 @@ public abstract class EnemyClass : CharaterClass
         {
             if (EnemySightFlag[i])
             {
-                if ((MapManager.GetTileState(i) & eTileState.Player) == eTileState.Player)
+                if ((MapManager.Instance.GetTileState(i) & eTileState.Player) == eTileState.Player)
                 {
                     DDPivot = -1;
                     int TempX;
                     int TempY;
-                    MapManager.ConvertIndexTo2D(i, out TempX, out TempY);
+                    MapManager.Instance.ConvertIndexTo2D(i, out TempX, out TempY);
                     Destination[0] = TempX;
                     Destination[1] = TempY;
                     return Destination;

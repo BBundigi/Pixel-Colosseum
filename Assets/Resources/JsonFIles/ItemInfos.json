@@ -1,8 +1,12 @@
-﻿[
- {
-   "ItemType" : Potion,
-   "ItemID" : 0,
-   "ItemName" : "화염병",
-   "ItemExplanation" : "이 작은 플라스크에는 화염을 뿜는 정령들이 있습니다"
- }
+[
+  {
+    "ItemID": 57,
+    "ItemName": null,
+    "ItemExplanation": null
+  },
+  {
+    "ItemID": 59,
+    "ItemName": null,
+    "ItemExplanation": null
+  }
 ]

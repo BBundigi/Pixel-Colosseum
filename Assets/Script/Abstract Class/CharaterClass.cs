@@ -20,7 +20,7 @@ public abstract class CharaterClass : MonoBehaviour {
         int m_StartXPos;
         int m_StartYPos;
 
-        MapManager.ConvertPositionToIndexs(transform.position, out m_StartXPos, out m_StartYPos);
+        MapManager.Instance.ConvertPositionToIndexs(transform.position, out m_StartXPos, out m_StartYPos);
 
         localXPos = m_StartXPos;
         localYPos = m_StartYPos;
@@ -31,7 +31,7 @@ public abstract class CharaterClass : MonoBehaviour {
 
     protected void SetBuffs()
     {
-        eTileState TileStateUnderCharacter = MapManager.GetTileState(localXPos, localYPos);
+        eTileState TileStateUnderCharacter = MapManager.Instance.GetTileState(localXPos, localYPos);
         if ((TileStateUnderCharacter & eTileState.OnFire) == eTileState.OnFire)
         {
             if (!BuffList.Contains(eBuffType.OnFire))
@@ -63,7 +63,6 @@ public abstract class CharaterClass : MonoBehaviour {
 
     protected void PlayBuffs()
     {
-        Debug.Log(Buffs);
         if ((Buffs & eBuffType.OnFire) == eBuffType.OnFire)
         {
             HealthPoint -= 4;
@@ -94,7 +93,7 @@ public abstract class CharaterClass : MonoBehaviour {
     {
         Anim.SetBool(AnimatorHashKeys.AnimIsMoveHash, true);
 
-        Vector3 TargetPosition = MapManager.ConvertIndexsToPosition(TargetXPos, TargetYPos);
+        Vector3 TargetPosition = MapManager.Instance.ConvertIndexsToPosition(TargetXPos, TargetYPos);
         Vector3 MovePointPerSecond = (TargetPosition - transform.position) / 16;
 
         while (transform.position != TargetPosition)

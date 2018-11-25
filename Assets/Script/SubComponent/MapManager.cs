@@ -1,16 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
-public static class MapManager {
-    private static TextAsset MapDataText = Resources.Load<TextAsset>("MapDataText/MapDataText_Cave");
+public  class MapManager : MonoBehaviour {
+    public static MapManager Instance;
+    private  TextAsset MapDataText = Resources.Load<TextAsset>("MapDataText/MapDataText_Cave");
 
+    private Tilemap MainTileMap;
+    private ITilemap MainTilemMapInfo;
+
+    public  Object[] MapObjects;
+
+    public  int WIDTH;
+    public  int HEIGH;
     
-
-    public static Object[] MapObjects;
-
-    public static int WIDTH;
-    public static int HEIGH;
 
     private static Vector2[][] enemyDefaultDestination;
 
@@ -29,7 +33,15 @@ public static class MapManager {
     public const float TILE_GAP = 1.0f;
     //Key Value for set MapManager!!
 
-    static MapManager() {
+    private void Awake() {
+        if(Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
         string StringMapData = MapDataText.ToString();
 
         string[] EachString = StringMapData.Split('\n');
@@ -57,36 +69,36 @@ public static class MapManager {
         SetEnemyDefaultDestination();
     }
 
-    public static void ConvertPositionToIndexs(Vector2 Position, out int RowIndex, out int ColumnIndex)
+    public  void ConvertPositionToIndexs(Vector2 Position, out int RowIndex, out int ColumnIndex)
     {
         RowIndex = (int)((Mathf.Round((Position.x - LOCAL_XPos_0) * 1000)) / 1000 / TILE_GAP);
         ColumnIndex = (int)((Mathf.Round((Position.y - LOCAL_YPos_0) * 1000)) / 1000 / TILE_GAP);
     }
 
-    public static Vector2 ConvertIndexsToPosition(int Row, int Column)
+    public  Vector2 ConvertIndexsToPosition(int Row, int Column)
     {
         return new Vector2(LOCAL_XPos_0 + Row * TILE_GAP, LOCAL_YPos_0 + Column * TILE_GAP);
     }
 
-    public static void ConvertIndexTo2D(int TargetIndex, out int RowIndex, out int ColumnIndex)
+    public  void ConvertIndexTo2D(int TargetIndex, out int RowIndex, out int ColumnIndex)
     {
         RowIndex = TargetIndex % WIDTH;
         ColumnIndex = TargetIndex / WIDTH;
     }
 
-    public static int ConvertIndexTo1D(int RowIndex, int ColumnIndex)
+    public  int ConvertIndexTo1D(int RowIndex, int ColumnIndex)
     {
         return ColumnIndex * WIDTH + RowIndex;
     }
 
-    public static bool AddTileState(Vector2 TargetPosition, eTileState TargetTileState)
+    public  bool AddTileState(Vector2 TargetPosition, eTileState TargetTileState)
     {
         int RowIndex;
         int ColumnIndex;
         ConvertPositionToIndexs(TargetPosition, out RowIndex, out ColumnIndex);
 
         if (RowIndex < 0 || RowIndex >= WIDTH || ColumnIndex < 0 || ColumnIndex >= HEIGH)
-        {
+        { 
             return false;
         }
         else if ((mapData[ColumnIndex, RowIndex] & TargetTileState) == TargetTileState)
@@ -98,7 +110,7 @@ public static class MapManager {
         return true;
     }
 
-    public static bool AddTileState(int RowIndex, int ColumnIndex , eTileState TargetTileState)
+    public  bool AddTileState(int RowIndex, int ColumnIndex , eTileState TargetTileState)
     {
         if (RowIndex < 0 || RowIndex >= WIDTH || ColumnIndex < 0 || ColumnIndex >= HEIGH)
         {
@@ -113,7 +125,7 @@ public static class MapManager {
         return true;
     }
 
-    public static bool AddTileState(int Index1D, eTileState TargetTileState)
+    public  bool AddTileState(int Index1D, eTileState TargetTileState)
     {
         int ColumnIndex;
         int RowIndex;
@@ -132,7 +144,7 @@ public static class MapManager {
         return true;
     }
 
-    public static bool RemoveTileState(int RowIndex, int ColumnIndex, eTileState TargetTileState)
+    public  bool RemoveTileState(int RowIndex, int ColumnIndex, eTileState TargetTileState)
     {
         if (RowIndex < 0 || RowIndex >= WIDTH || ColumnIndex < 0 || ColumnIndex >= HEIGH)
         {
@@ -143,7 +155,7 @@ public static class MapManager {
         return true;
     }
 
-    public static bool RemoveTileState(int Index1D, eTileState TargetTileState)
+    public  bool RemoveTileState(int Index1D, eTileState TargetTileState)
     {
         int ColumnIndex;
         int RowIndex;
@@ -158,7 +170,7 @@ public static class MapManager {
         return true;
     }
 
-    public static bool SetMapObjects(int RowIndex, int ColumnIndex, Object TargetObject)
+    public  bool SetMapObjects(int RowIndex, int ColumnIndex, Object TargetObject)
     {
         if (RowIndex < 0 || RowIndex >= WIDTH || ColumnIndex < 0 || ColumnIndex >= HEIGH)
         {
@@ -170,14 +182,14 @@ public static class MapManager {
         return true;
     }
 
-    public static Object GetMapObjects(int RowIndex, int ColumnIndex)
+    public  Object GetMapObjects(int RowIndex, int ColumnIndex)
     {
         int index = ConvertIndexTo1D(RowIndex, ColumnIndex);
 
         return MapObjects[index];
     }
 
-    public static eTileState GetTileState(Vector2 TargetPosition)
+    public  eTileState GetTileState(Vector2 TargetPosition)
     {
         int RowIndex;
         int ColumnIndex;
@@ -192,7 +204,7 @@ public static class MapManager {
         return mapData[ColumnIndex, RowIndex];
     }
     
-    public static eTileState GetTileState(int Index1D)
+    public  eTileState GetTileState(int Index1D)
     {
         int RowIndex;
         int ColumnIndex;
@@ -207,7 +219,7 @@ public static class MapManager {
         return mapData[ColumnIndex, RowIndex];
     }
 
-    public static eTileState GetTileState(int RowIndex, int ColumnIndex)
+    public  eTileState GetTileState(int RowIndex, int ColumnIndex)
     {
         if (RowIndex < 0 || RowIndex >= WIDTH || ColumnIndex < 0 || ColumnIndex >= HEIGH)
         {
@@ -217,7 +229,7 @@ public static class MapManager {
         return mapData[ColumnIndex, RowIndex];
     }
 
-    public static bool CheckTileState(int Distance, eTileState TargetTileState, int RowIndex, int ColumnIndex)
+    public  bool CheckTileState(int Distance, eTileState TargetTileState, int RowIndex, int ColumnIndex)
     {
         for (int i = -Distance; i < Distance + 1; i++)
         {
@@ -235,7 +247,7 @@ public static class MapManager {
         return false;
     }
 
-    private static void SetEnemyDefaultDestination()
+    private  void SetEnemyDefaultDestination()
     {
         //Use Secene number for set Defualt Destination In EnemyClass 
         Vector2 DefaultPosition0 = new Vector2(3, 12);

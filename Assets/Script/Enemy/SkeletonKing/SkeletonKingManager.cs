@@ -12,7 +12,7 @@ public class SkeletonKingManager : EnemyClass {
     {
         SetBuffs();
         PlayBuffs();
-        if (MapManager.CheckTileState(1, eTileState.Player, localXPos, localYPos))
+        if (MapManager.Instance.CheckTileState(1, eTileState.Player, localXPos, localYPos))
         {
             return eEnemyState.Attack;
         }

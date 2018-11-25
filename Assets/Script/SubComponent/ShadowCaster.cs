@@ -17,8 +17,8 @@ public static class ShadowCaster {
     private static Transform ShadowParent;
      static ShadowCaster ()
     {
-        HEIGH = MapManager.HEIGH;
-        WIDTH = MapManager.WIDTH;
+        HEIGH = MapManager.Instance.HEIGH;
+        WIDTH = MapManager.Instance.WIDTH;
         fieldOfView = new bool[HEIGH * WIDTH];
 
         ShadowParent = GameObject.FindGameObjectWithTag("ShadowParent").transform;
@@ -29,7 +29,7 @@ public static class ShadowCaster {
             for (int j = 0; j < WIDTH; j++)
             {
                 GameObject TempShadow = Object.Instantiate(Shadow, ShadowParent);
-                TempShadow.transform.position = MapManager.ConvertIndexsToPosition(j, i);
+                TempShadow.transform.position = MapManager.Instance.ConvertIndexsToPosition(j, i);
                 Shadows[i, j] = TempShadow;
                 TempShadow.SetActive(false);
             }
@@ -122,7 +122,7 @@ public static class ShadowCaster {
                         fieldOfView[pos] = true;
                     }
 
-                    if (MapManager.GetTileState(x,y) == eTileState.Wall)
+                    if (MapManager.Instance.GetTileState(x,y) == eTileState.Wall)
                     {
                         Obs.add(a1, a2);
                     }

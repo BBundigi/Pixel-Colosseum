@@ -13,8 +13,8 @@ public class TouchManager : MonoBehaviour
             return nowMode;
         }
         set
-        { 
-            switch(value)
+        {
+            switch (value)
             {
                 case eTouchMode.CloseInventory:
                     {
@@ -45,6 +45,7 @@ public class TouchManager : MonoBehaviour
             isDrag = false;
         }
     }
+
     private eTouchMode nowMode;
 
     private eItemID targetItem;

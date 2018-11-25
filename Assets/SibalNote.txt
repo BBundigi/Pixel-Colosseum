@@ -111,14 +111,11 @@ CharacterClass -> PlayerManager
 						EnemyStateMachine에 EnemyClass에 집어넣을듯
 
 
+
+
 ToDoList
 
---> Potion buff system 테스트 완료하기
+--> Map Manager를 TileMap을 이용한 스크립트로 변화시키기
 
---> Player Status 마저 채우기 # 같은 컴포넌트를 공유한 게임오브젝트 두개를 만들수 있을까?
-                               아님 실시간으로 정보를 전달해줘야할까?
-							   아니면 리메이크해서 다른형식으로 만들까?
 
---> Pixel Perfect을 위한 Othgraphic size 계산해내기...혹시못찾으면 깃헙에서...줍줍..
 
---> Sprite vs Texture 차이 알아보기

@@ -20,14 +20,14 @@ public static class EnumManager
 public enum eTileState
 {
     None = 0,
-    Shadow = 1,
-    BasicTile = 2,
-    Wall = 4,
-    Movable = 8,
-    Player = 16,
-    Enemy = 32,
-    OnFire = 64,
-    OnPoison = 128,
+    Shadow = 1 << 0,
+    BasicTile = 1 << 1,
+    Wall = 1 << 2,
+    Movable = 1 << 3,
+    Player = 1 << 4,
+    Enemy = 1 << 5,
+    OnFire = 1<< 6,
+    OnPoison = 1<<7,
 }
 
 public enum eBuffType
@@ -64,12 +64,6 @@ public enum eItemID
     MirrorScroll = 40,
     FireFlask = 57,
     PoisonFlask = 59,
-}
-
-public enum eItemType
-{
-    Potion,
-    Scroll,
 }
 
 public enum eEnemyState

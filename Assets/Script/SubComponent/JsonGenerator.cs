@@ -1,12 +1,10 @@
 ﻿using UnityEngine;
 using Newtonsoft.Json;
 using System.IO;
-using UnityEngine.UI;
-using  ;
 
 public class JsonGenerator : MonoBehaviour
-{ 
-    
+{
+    ItemInfo[] ItemInfos;
     void Start()
     {
         SerializeAndSave();
@@ -14,33 +12,24 @@ public class JsonGenerator : MonoBehaviour
 
     private void GenerateInfo()
     {
-        RelicInfos = new RelicInfo[3];
-        for (int i = 0; i < RelicInfos.Length; i++)
+        ItemInfos = new ItemInfo[2];
+        for (int i = 0; i < ItemInfos.Length; i++)
         {
-            RelicInfos[i] = new RelicInfo();
-            RelicInfos[i].ID = (eRelicNameID)i;
+            ItemInfos[i] = new ItemInfo();
         }
+
+        ItemInfos[0].ItemID = eItemID.FireFlask;
+        ItemInfos[1].ItemID = eItemID.PoisonFlask;
     }
 
     private void SerializeAndSave()
     {
         GenerateInfo();
-        string PATH = SaveDataController.GenerateFileLocation("RelicInfo.json");
-        string data = JsonConvert.SerializeObject(RelicInfos, Formatting.Indented);
+        string PATH = SaveDataController.GenerateFileLocation("ItemInfos.json");
+        string data = JsonConvert.SerializeObject(ItemInfos, Formatting.Indented);
         StreamWriter streamWriter = new StreamWriter(PATH);
         streamWriter.Write(data);
         streamWriter.Close();
     }
-
-    private void LoadAndDeserialize()
-    {
-        string PATH = SaveDataController.GenerateFileLocation("shopInfo.json");
-        StreamReader streamReader = new StreamReader(PATH);
-        string data = streamReader.ReadToEnd();
-        streamReader.Close();
-
-        //infos = JsonConvert.DeserializeObject<StageInfo[]>(data);
-
-        //Debug.Log(infos.Length);
-    }
 }
+
